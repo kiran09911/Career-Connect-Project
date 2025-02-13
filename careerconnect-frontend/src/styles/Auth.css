@@ -1,0 +1,97 @@
+/* Container */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8d7da;
+  }
+  
+  /* Box Styling */
+  .auth-box {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+  }
+  
+  /* Heading */
+  h2 {
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* Social Login */
+  .social-login {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .social-login img {
+    width: 30px;
+    cursor: pointer;
+  }
+  
+  .social-login span {
+    font-size: 14px;
+  }
+  
+  /* Input Fields */
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  /* User Type */
+  .user-type {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+  
+  .user-type-btn {
+    background: #ccc;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+  }
+  
+  /* Button */
+  button {
+    width: 100%;
+    padding: 10px;
+    background: blue;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  
+  .btn:hover {
+    background: darkblue;
+  }
+  
+  /* Login and Signup Links */
+  .login-link, .signup-link {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  .login-link a, .signup-link a {
+    color: blue;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
