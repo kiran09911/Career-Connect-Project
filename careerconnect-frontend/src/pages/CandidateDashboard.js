@@ -1,3 +1,253 @@
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { Link, useNavigate } from "react-router-dom";
+// import "../styles/Home.css";
+// import "../styles/Candidate.css";
+// import Chat from "../components/Chat"; 
+// import { List, ListItem, ListItemText, Avatar, Badge, IconButton, Dialog, DialogTitle, DialogContent } from "@mui/material";
+// import ChatIcon from '@mui/icons-material/Chat';
+// import CloseIcon from '@mui/icons-material/Close';
+// import Button from '@mui/material/Button';
+
+
+
+// const Home = () => {
+//   const [jobs, setJobs] = useState([]);
+  
+// const [loading, setLoading] = useState(false);
+//   const [showJobs, setShowJobs] = useState(false);
+//   const [currentUser, setCurrentUser] = useState(null);
+//   const [conversations, setConversations] = useState([]);
+//   const [selectedChat, setSelectedChat] = useState(null);
+//   const [showChat, setShowChat] = useState(false);
+//   const [unreadCounts, setUnreadCounts] = useState({});
+//   const navigate = useNavigate();
+//   const [authChecked, setAuthChecked] = useState(false)
+
+//   useEffect(() => {
+//     const verifyAuth = async () => {
+//       const token = localStorage.getItem('token');
+//       console.log('Initial token check:', token);
+      
+//       if (!token) {
+//         console.log('No token found - redirecting');
+//         navigate('/login');
+//         return;
+//       }
+
+//       try {
+//         console.log('Verifying token with backend...');
+//         const response = await axios.get('http://localhost:5000/api/user', {
+//           headers: { Authorization: `Bearer ${token}` }
+//         });
+        
+//         console.log('Auth response:', response.data);
+//         if (!response.data?.id) {
+//           throw new Error('Invalid user data');
+//         }
+
+//         setCurrentUser(response.data);
+//         localStorage.setItem('userRole', response.data.role);
+//         localStorage.setItem('userId', response.data.id);
+
+//       } catch (err) {
+//         console.error('Auth verification failed:', err);
+//         localStorage.clear();
+//         navigate('/login');
+//       } finally {
+//         setAuthChecked(true);
+//         setLoading(false);
+//         console.log('Auth check completed');
+//       }
+//     };
+
+//     verifyAuth();
+//   }, [navigate])
+
+//   // Fetch current user data
+//   useEffect(() => {
+//     const token = localStorage.getItem('token');
+//     if (!token) {
+//       navigate('/login');
+//       return;
+//     }
+
+//     axios.get('http://localhost:5000/api/user', {
+//       headers: { Authorization: `Bearer ${token}` }
+//     })
+//     .then(res => setCurrentUser(res.data))
+//     .catch(err => {
+//       console.error("Error fetching user:", err);
+//       navigate('/login');
+//     });
+//   }, [navigate]);
+
+//   // Fetch jobs from backend
+//   useEffect(() => {
+//     axios.get("http://localhost:5000/api/jobs")
+//       .then((res) => setJobs(res.data))
+//       .catch((err) => console.error("Error fetching jobs:", err));
+//   }, []);
+
+  
+
+//   // Fetch conversations
+//   useEffect(() => {
+//     if (!currentUser?.id) return;
+
+//     axios.get(`http://localhost:5000/api/conversations/${currentUser.id}`)
+//       .then(res => {
+//         setConversations(res.data);
+        
+//         // Initialize unread counts
+//         const counts = {};
+//         res.data.forEach(conv => {
+//           counts[conv.id] = conv.unread_count || 0;
+//         });
+//         setUnreadCounts(counts);
+//       })
+//       .catch(err => console.error("Error fetching conversations:", err));
+//   }, [currentUser?.id]);
+
+//   const handleChatOpen = (conversation) => {
+//     setSelectedChat({
+//       id: conversation.other_user_id,
+//       name: conversation.other_user_name,
+//       conversationId: conversation.id,
+//       jobId: conversation.job_id
+//     });
+//     setShowChat(true);
+    
+//     // Mark as read when opening chat
+//     if (unreadCounts[conversation.id] > 0) {
+//       setUnreadCounts(prev => ({ ...prev, [conversation.id]: 0 }));
+//     }
+//   };
+
+//   return (
+//     <div className="home-container">
+//       {/* Header Section with Chat Icon */}
+//       <header className="header">
+//         <div className="container">
+//           <div className="logo">
+//             <span>Career Connect</span>
+//           </div>
+//           <nav className="nav">
+//             <Link to="/profile">UserProfile</Link>
+//             <IconButton 
+//               color="inherit" 
+//               onClick={() => setShowChat(true)}
+//               style={{ marginLeft: 'auto' }}
+//             >
+//               <Badge 
+//                 badgeContent={Object.values(unreadCounts).reduce((a, b) => a + b, 0)} 
+//                 color="error"
+//               >
+//                 <ChatIcon />
+//               </Badge>
+//             </IconButton>
+//           </nav>
+//         </div>
+//       </header>
+
+//       {/* Chat Dialog */}
+//       <Dialog 
+//         open={showChat} 
+//         onClose={() => setShowChat(false)}
+//         fullWidth
+//         maxWidth="md"
+//       >
+//         <DialogTitle>
+//           Messages
+//           <IconButton
+//             aria-label="close"
+//             onClick={() => setShowChat(false)}
+//             sx={{
+//               position: 'absolute',
+//               right: 8,
+//               top: 8,
+//               color: (theme) => theme.palette.grey[500],
+//             }}
+//           >
+//             <CloseIcon />
+//           </IconButton>
+//         </DialogTitle>
+//         <DialogContent dividers>
+//           {!selectedChat ? (
+//             <List>
+//               {conversations.length > 0 ? (
+//                 conversations.map(conversation => (
+//                   <ListItem 
+//                     button 
+//                     key={conversation.id}
+//                     onClick={() => handleChatOpen(conversation)}
+//                     secondaryAction={
+//                       <Badge 
+//                         badgeContent={unreadCounts[conversation.id] || 0} 
+//                         color="primary"
+//                       />
+//                     }
+//                   >
+//                     <Avatar>{conversation.other_user_name.charAt(0)}</Avatar>
+//                     <ListItemText
+//                       primary={conversation.other_user_name}
+//                       secondary={conversation.last_message}
+//                       style={{ marginLeft: '16px' }}
+//                     />
+//                   </ListItem>
+//                 ))
+//               ) : (
+//                 <ListItem>
+//                   <ListItemText primary="No conversations yet" />
+//                 </ListItem>
+//               )}
+//             </List>
+//           ) : (
+//             <>
+//               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
+//                 <Avatar>{selectedChat.name.charAt(0)}</Avatar>
+//                 <h3 style={{ marginLeft: '16px' }}>{selectedChat.name}</h3>
+//                 <Button 
+//                   style={{ marginLeft: 'auto' }}
+//                   onClick={() => setSelectedChat(null)}
+//                 >
+//                   Back to conversations
+//                 </Button>
+//               </div>
+//               {currentUser && (
+//                 <Chat 
+//                   currentUser={currentUser} 
+//                   otherUser={selectedChat} 
+//                 />
+//               )}
+//             </>
+//           )}
+//         </DialogContent>
+//       </Dialog>
+
+//       {/* Rest of your existing components... */}
+//       <section className="hero">
+//         {/* ... existing hero content ... */}
+//       </section>
+
+//       <section className="features">
+//         {/* ... existing features ... */}
+//       </section>
+
+//       {showJobs && (
+//         <section className="job-listings">
+//           {/* ... existing job listings ... */}
+//         </section>
+//       )}
+
+//       <footer className="footer">
+//         {/* ... existing footer ... */}
+//       </footer>
+//     </div>
+//   );
+// };
+
+// export default Home;
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
@@ -44,9 +294,9 @@ const Home = () => {
             <Link onClick={() => setShowJobs(true)} className="btn primary">
               Find Jobs
             </Link>
-            <Link to="/post-job" className="btn secondary">
+            {/* <Link to="/post-job" className="btn secondary">
               Post a Job
-            </Link>
+            </Link> */}
           </div>
         </div>
       </section>
