@@ -54,19 +54,20 @@
 
 import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
-import { io } from 'socket.io-client';
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import PostJob from './pages/PostJob';
-import JobsList from './pages/JobsList';
-import CandidateDashboard from "./pages/CandidateDashboard";
-import RecruiterDashboard from "./pages/RecruiterDashboard";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import UserProfile from "./components/UserProfile";
+// import { io } from 'socket.io-client';
+import Register from "./pages/auth/Register";
+import Login from "./pages/auth/Login";
+import PostJob from './pages/recruiter/PostJob';
+import JobsList from './pages/candidate/JobsList';
+import CandidateDashboard from "./pages/candidate/CandidateDashboard";
+import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+// import ProfileEdit from './pages/shared/ProfileEdit';
+import ProfileEdit from './pages/recruiter/ProfileEdit';
 
-import ProtectedRoute from "./components/ProtectedRoute";
-import { ChatProvider } from './context/ChatContext';
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import { ChatProvider } from './contexts/ChatContext';
 
  // For auth protection
 
@@ -77,31 +78,42 @@ import './styles/Profile.css';
 import './styles/Chat.css'; 
 import './styles/Candidate.css';// Add this new CSS file
 
-// Socket.io context setup
-export const SocketContext = React.createContext();
+const getUserId = () => {
+  return localStorage.getItem("userId"); // Assuming user ID is stored in localStorage after login
+};
 
+const loggedInUserId = getUserId(); // Get the logged-in user ID
+
+
+// // Socket.io context setup
+// export const SocketContext = React.createContext();
+
+// const App = () => {
+//   const [socket, setSocket] = React.useState(null);
+
+//   useEffect(() => {
+//     // Initialize socket connection when user is authenticated
+//     const token = localStorage.getItem('token');
+//     if (token && !socket) {
+//       const newSocket = io('http://localhost:5000', {
+//         auth: { token },
+//         reconnectionAttempts: 5,
+//         reconnectionDelay: 1000,
+//       });
+//       setSocket(newSocket);
+
+//       return () => {
+//         newSocket.disconnect();
+//       };
+//     }
+//   }, []);
+
+  
+
+//   return (
+//     <SocketContext.Provider value={socket}>
 const App = () => {
-  const [socket, setSocket] = React.useState(null);
-
-  useEffect(() => {
-    // Initialize socket connection when user is authenticated
-    const token = localStorage.getItem('token');
-    if (token && !socket) {
-      const newSocket = io('http://localhost:5000', {
-        auth: { token },
-        reconnectionAttempts: 5,
-        reconnectionDelay: 1000,
-      });
-      setSocket(newSocket);
-
-      return () => {
-        newSocket.disconnect();
-      };
-    }
-  }, []);
-
-  return (
-    <SocketContext.Provider value={socket}>
+  return(
       <ChatProvider>
         <BrowserRouter>
           <Routes>
@@ -110,6 +122,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/recruiter/profile-edit" element={<ProfileEdit />} />
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute allowedRoles={['candidate']} />}>
@@ -125,14 +138,14 @@ const App = () => {
 
             <Route element={<ProtectedRoute allowedRoles={['candidate', 'recruiter']} />}>
               <Route path="/jobsview" element={<JobsList />} />
-              <Route path="/profile" element={<UserProfile />} />
+              <Route path="/profile-edit" element={<ProfileEdit userId={loggedInUserId} />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
       </ChatProvider>
-    </SocketContext.Provider>
+    // </SocketContext.Provider>
   );
 };
 
@@ -146,4 +159,6 @@ const NotFound = () => {
   );
 };
 
+
 export default App;
+

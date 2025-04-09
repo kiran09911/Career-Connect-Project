@@ -1,0 +1,135 @@
+/* General reset */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9fafb;
+    color: #333;
+  }
+  
+  /* Dashboard layout */
+  .dashboard {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+  }
+  
+  /* Job Card */
+  .job-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .job-card:hover {
+    transform: scale(1.01);
+  }
+  
+  .job-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .job-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+  }
+  
+  /* Applicants section */
+  .applicants {
+    margin-top: 10px;
+  }
+  
+  .applicant {
+    background-color: #f1f5f9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .applicant-info {
+    font-size: 16px;
+  }
+  
+  /* Chat button */
+  .chat-btn {
+    padding: 8px 16px;
+    background-color: #0284c7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .chat-btn:hover {
+    background-color: #0369a1;
+  }
+  
+  /* Chat box */
+  .chat-box {
+    margin-top: 20px;
+    background-color: #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .chat-message {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 70%;
+  }
+  
+  .chat-message.sent {
+    background-color: #d1fae5;
+    align-self: flex-end;
+  }
+  
+  .chat-message.received {
+    background-color: #fff;
+    align-self: flex-start;
+  }
+  
+  /* Message input */
+  .message-input-container {
+    display: flex;
+    margin-top: 10px;
+  }
+  
+  .message-input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    margin-right: 8px;
+  }
+  
+  .send-btn {
+    padding: 10px 16px;
+    background-color: #10b981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .send-btn:hover {
+    background-color: #059669;
+  }
+  
