@@ -33,7 +33,6 @@ import {
 import {
   Save,
   Cancel,
-  ArrowBack,
   Person,
   Home,
   LocationOn,
@@ -64,6 +63,8 @@ const ProfileEdit = () => {
       municipality: '',
       city: '',
     },
+    profile_photo: '',
+    
   });
 
   const [loading, setLoading] = useState(true);
@@ -71,8 +72,7 @@ const ProfileEdit = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+ 
 
   // Gender options
   const genderOptions = [
@@ -89,25 +89,83 @@ const ProfileEdit = () => {
       const response = await axios.get('http://localhost:5000/api/user', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setProfile(response.data); // Set the profile data
+  
+      const data = response.data;
+      setProfile({
+        name: data.name || '',
+        email: data.email || '',
+        phone: data.phone || '',
+        gender: data.gender || '',
+        degree: data.degree || '',
+        institute: data.institute || '',
+        permanent_address: data.permanent_address || {
+          province: '',
+          district: '',
+          municipality: '',
+          city: '',
+        },
+        current_address: data.current_address || {
+          province: '',
+          district: '',
+          municipality: '',
+          city: '',
+        },
+        profile_photo: data.profile_photo || '',
+      });
     } catch (err) {
       console.error('Error fetching profile:', err);
       setSnackbar({ open: true, message: 'Failed to fetch profile', severity: 'error' });
     } finally {
-      setLoading(false); // Stop loading after fetching profile
+      setLoading(false);
     }
   };
 
   // Handle profile update
   const handleProfileUpdate = async () => {
+    // Check if all required fields are filled
+    if (
+      !profile.name ||
+      !profile.email ||
+      !profile.phone ||
+      !profile.gender ||
+      !profile.degree ||
+      !profile.institute ||
+      !profile.permanent_address.province ||
+      !profile.permanent_address.district ||
+      !profile.permanent_address.municipality ||
+      !profile.permanent_address.city ||
+      !profile.current_address.province ||
+      !profile.current_address.district ||
+      !profile.current_address.municipality ||
+      !profile.current_address.city
+    ) {
+      setSnackbar({ open: true, message: 'Please fill all required fields!', severity: 'error' });
+      return;
+    }
+  
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
-        'http://localhost:5000/api/recruiter/profile',
-        profile,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const formData = new FormData();
+      formData.append('name', profile.name);
+      formData.append('email', profile.email);
+      formData.append('phone', profile.phone);
+      formData.append('gender', profile.gender);
+      formData.append('degree', profile.degree);
+      formData.append('institute', profile.institute);
+      formData.append('permanent_address', JSON.stringify(profile.permanent_address));
+      formData.append('current_address', JSON.stringify(profile.current_address));
+      if (profile.profile_photo instanceof File) {
+        formData.append('profile_photo', profile.profile_photo); // Add profile photo if updated
+      }
+  
+      await axios.put('http://localhost:5000/api/recruiter/profile', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
       setSnackbar({ open: true, message: 'Profile updated successfully!', severity: 'success' });
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -150,15 +208,11 @@ const ProfileEdit = () => {
         </Toolbar>
       </AppBar>
       
+      
       <Container maxWidth="md" sx={{ mt: 4, mb: 8 }}>
         <Box sx={{ mb: 4 }}>
           <Breadcrumbs aria-label="breadcrumb">
-            <Link 
-              underline="hover" 
-              color="inherit" 
-              href="/recruiter-dashboard"
-              sx={{ display: 'flex', alignItems: 'center' }}
-            >
+            <Link underline="hover" color="inherit" href="/recruiter-dashboard" sx={{ display: 'flex', alignItems: 'center' }}>
               <Dashboard sx={{ mr: 0.5 }} fontSize="small" />
               Dashboard
             </Link>
@@ -168,6 +222,7 @@ const ProfileEdit = () => {
             </Typography>
           </Breadcrumbs>
         </Box>
+     
 
         <Paper 
           elevation={3} 
@@ -197,20 +252,40 @@ const ProfileEdit = () => {
                   fontSize: '2rem',
                   fontWeight: 'bold'
                 }}
+                src={
+                  profile.profile_photo instanceof File
+                    ? URL.createObjectURL(profile.profile_photo)
+                    : profile.profile_photo
+                    ? `http://localhost:5000${profile.profile_photo}`
+                    : undefined
+                }
               >
-                {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
+                {!profile.profile_photo && (profile.name ? profile.name.charAt(0).toUpperCase() : 'U')}
+              
+                
               </Avatar>
-              <IconButton 
-                sx={{ 
-                  position: 'absolute', 
-                  bottom: -5, 
-                  right: -5, 
+              <IconButton
+                component="label"
+                sx={{
+                  position: 'absolute',
+                  bottom: -5,
+                  right: -5,
                   bgcolor: 'white',
-                  '&:hover': { bgcolor: '#f5f5f5' }
+                  '&:hover': { bgcolor: '#f5f5f5' },
                 }}
                 size="small"
               >
                 <PhotoCamera fontSize="small" color="primary" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setProfile({ ...profile, profile_photo: e.target.files[0] });
+                    }
+                  }}
+                />
               </IconButton>
             </Box>
             <Box>

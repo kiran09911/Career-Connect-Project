@@ -63,6 +63,7 @@ import CandidateDashboard from "./pages/candidate/CandidateDashboard";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import AppliedJobs from "./pages/candidate/AppliedJobs";
 // import ProfileEdit from './pages/shared/ProfileEdit';
 import ProfileEdit from './pages/recruiter/ProfileEdit';
 
@@ -127,6 +128,7 @@ const App = () => {
             {/* Protected routes */}
             <Route element={<ProtectedRoute allowedRoles={['candidate']} />}>
               <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
+              <Route path="/candidate/applications" element={<AppliedJobs />} />
             </Route>
 
             

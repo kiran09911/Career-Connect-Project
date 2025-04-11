@@ -70,6 +70,8 @@ const RecruiterDashboard = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [tabValue, setTabValue] = useState(0);
+  const [userLoading, setUserLoading] = useState(true);
+  const [user, setUser] = useState({ name: '', email: '' }); // State to store user data
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -92,6 +94,7 @@ const RecruiterDashboard = () => {
       console.error('Error fetching applications:', err);
     }
   };
+
 
   // Fetch recruiter's jobs
   const fetchJobs = async () => {
@@ -119,12 +122,39 @@ const RecruiterDashboard = () => {
       setLoading(false);
     }
   };
+ 
 
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found in localStorage');
+        navigate('/login');
+        return;
+      }
+  
+      const response = await axios.get('http://localhost:5000/api/user', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      setUser(response.data); // Set the user data
+    } catch (err) {
+      console.error('Error fetching user profile:', err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
+    } finally {
+      setUserLoading(false); // Stop loading
+    }
+  };
+  
   useEffect(() => {
     fetchJobs();
-    fetchApplications();
+    fetchApplications(); // Fetch applications when the component mounts
+    fetchUserProfile(); // Call the function here
   }, []);
-
+  
   const handleDeleteClick = (job) => {
     setJobToDelete(job);
     setDeleteDialogOpen(true);
@@ -173,9 +203,10 @@ const RecruiterDashboard = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
     localStorage.removeItem('userId');
+    setUser({ name: '', email: '' }); // Reset the user state
     navigate('/login');
   };
-
+  
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -215,13 +246,13 @@ const RecruiterDashboard = () => {
             bgcolor: theme.palette.primary.main
           }}
         >
-          {localStorage.getItem('userName')?.charAt(0) || 'R'}
+          {user.name ? user.name.charAt(0).toUpperCase() : 'R'}
         </Avatar>
         <Typography variant="h6" noWrap component="div">
-          Recruiter Portal
+          {user.name || 'Recruiter Portal'}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {localStorage.getItem('userEmail') || 'recruiter@example.com'}
+          {user.email || 'recruiter@example.com'}
         </Typography>
       </Box>
       <Divider />
@@ -238,18 +269,6 @@ const RecruiterDashboard = () => {
           </ListItemIcon>
           <ListItemText primary="Post New Job" />
         </ListItem>
-        {/* <ListItem button component={Link} to="/recruiter/applications">
-          <ListItemIcon>
-            <Description />
-          </ListItemIcon>
-          <ListItemText primary="Applications" />
-          <Chip 
-            size="small" 
-            color="primary" 
-            label={applications.length} 
-            sx={{ ml: 1 }}
-          />
-        </ListItem> */}
         <ListItem button component={Link} to="/recruiter/profile-edit">
           <ListItemIcon>
             <Person />

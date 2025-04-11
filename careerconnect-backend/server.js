@@ -937,7 +937,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
-app.use('/api/profile', profileRoutes);
+app.use('/api', applicationRoutes);
+app.use('/api', profileRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/user', userRoutes);
 
