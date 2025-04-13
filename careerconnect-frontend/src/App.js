@@ -66,6 +66,8 @@ import ResetPassword from "./pages/auth/ResetPassword";
 import AppliedJobs from "./pages/candidate/AppliedJobs";
 // import ProfileEdit from './pages/shared/ProfileEdit';
 import ProfileEdit from './pages/recruiter/ProfileEdit';
+import CandidateProfileEdit from './pages/candidate/CandidateProfileEdit';
+import CandidateProfile from "./pages/candidate/CandidateProfile";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { ChatProvider } from './contexts/ChatContext';
@@ -129,6 +131,8 @@ const App = () => {
             <Route element={<ProtectedRoute allowedRoles={['candidate']} />}>
               <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
               <Route path="/candidate/applications" element={<AppliedJobs />} />
+              <Route path="/candidate/profile/edit" element={<CandidateProfileEdit />} />
+              <Route path="/candidate/profile" element={<CandidateProfile />} />
             </Route>
 
             

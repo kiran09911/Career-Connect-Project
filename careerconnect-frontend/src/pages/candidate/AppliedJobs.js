@@ -232,7 +232,14 @@ const AppliedJobs = () => {
                       </Box>
   
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        Applied on: {new Date(application.created_at || Date.now()).toLocaleDateString()}
+                        Applied on:{" "}
+  {application.created_at
+    ? new Date(application.created_at).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Date not available"}
                       </Typography>
                     </CardContent>
   

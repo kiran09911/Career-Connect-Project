@@ -608,7 +608,13 @@ const RecruiterDashboard = () => {
                           Company: {app.job_company}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          Applied on: {new Date(app.created_at).toLocaleDateString()}
+                        {app.applied_date
+            ? new Date(app.applied_date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            : "Date not available"}
                         </Typography>
                       </CardContent>
                       <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>

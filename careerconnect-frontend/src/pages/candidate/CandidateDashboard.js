@@ -106,7 +106,7 @@
 //           return
 //         }
 
-//         const response = await axios.get("http://localhost:5000/api/profile", {
+//         const response = await axios.get("http://localhost:5000/api/candidate/profile", {
 //           headers: { Authorization: `Bearer ${token}` },
 //         })
 
@@ -246,26 +246,14 @@
 //       })
 //       setApplications(response.data)
 //     } catch (err) {
-//       console.error("Error applying for job:", err);
-  
-//       if (err.response?.status === 409) {
-//         setSnackbar({
-//           open: true,
-//           message: "You have already applied for this job.",
-//           severity: "warning",
-//         });
-//       } else {
-//         setSnackbar({
-//           open: true,
-//           message: err.response?.data?.error || "Failed to apply for the job.",
-//           severity: "error",
-//         });
-//       }
+//       console.error("Error applying for job:", err)
+//       setSnackbar({
+//         open: true,
+//         message: err.response?.data?.error || "Failed to apply for the job.",
+//         severity: "error",
+//       })
 //     }
 //   }
-
-
-  
 
 //   const handleChatOpen = (chat) => {
 //     if (!chat || !chat.id) {
@@ -398,8 +386,7 @@
 //           <ListItemIcon>
 //             <Description />
 //           </ListItemIcon>
-//           <ListItemText primary="My Applications" />
-//           <Chip size="small" color="primary" label={applications.length} sx={{ ml: 1 }} />
+//           <ListItemText primary="Applied Jobs" />
 //         </ListItem>
 //         <ListItem button onClick={() => setShowChat(true)}>
 //           <ListItemIcon>
@@ -408,19 +395,25 @@
 //             </Badge>
 //           </ListItemIcon>
 //           <ListItemText primary="Messages" />
-//         </ListItem>
-//         <ListItem button component={Link} to="/candidate/profile">
-//           <ListItemIcon>
-//             <Person />
-//           </ListItemIcon>
-//           <ListItemText primary="Profile" />
-//         </ListItem>
-//         <ListItem button component={Link} to="/candidate/settings">
-//           <ListItemIcon>
-//             <Settings />
-//           </ListItemIcon>
-//           <ListItemText primary="Settings" />
-//         </ListItem>
+//           </ListItem>
+//       <ListItem button component={Link} to="/candidate/profile">
+//         <ListItemIcon>
+//           <Person />
+//         </ListItemIcon>
+//         <ListItemText primary="Profile" />
+//       </ListItem>
+//       <ListItem button component={Link} to="/candidate/profile/edit">
+//         <ListItemIcon>
+//           <Person />
+//         </ListItemIcon>
+//         <ListItemText primary="Edit Profile" />
+//       </ListItem>
+//       <ListItem button component={Link} to="/candidate/settings">
+//         <ListItemIcon>
+//           <Settings />
+//         </ListItemIcon>
+//         <ListItemText primary="Settings" />
+//       </ListItem>
 //       </List>
 //       <Divider />
 //       <List>
@@ -541,7 +534,7 @@
 //           <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
 //             <Tab label="Available Jobs" icon={<Work />} iconPosition="start" />
 //             <Tab
-//               label={`My Applications (${applications.length})`}
+//                label={`Applied Jobs${applications.length > 0 ? ` (${applications.length})` : ""}`}
 //               icon={<Description />}
 //               iconPosition="start"
 //               component={Link}
@@ -716,6 +709,140 @@
 //                     </Card>
 //                   </Grid>
 //                 ))}
+//               </Grid>
+//             )}
+//           </>
+//         )}
+
+//         {tabValue === 1 && (
+//           <>
+//             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+//               <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+//                 Applied Jobs
+//               </Typography>
+//             </Box>
+
+//             {applications.length === 0 ? (
+//               <Paper
+//                 sx={{
+//                   p: 4,
+//                   textAlign: "center",
+//                   borderRadius: 2,
+//                   boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+//                   background: "linear-gradient(to bottom right, #f5f5f5, #ffffff)",
+//                 }}
+//               >
+//                 <Box sx={{ mb: 2 }}>
+//                   <Description sx={{ fontSize: 60, color: "text.secondary", opacity: 0.5 }} />
+//                 </Box>
+//                 <Typography variant="h6" gutterBottom>
+//                   No applications yet
+//                 </Typography>
+//                 <Typography color="text.secondary" paragraph>
+//                   You haven't applied to any jobs yet. Browse available jobs and submit your first application.
+//                 </Typography>
+//                 <Button
+//                   variant="contained"
+//                   color="primary"
+//                   component={Link}
+//                   to="/candidate/jobs"
+//                   onClick={() => setTabValue(0)}
+//                   sx={{ mt: 2, borderRadius: 2 }}
+//                 >
+//                   Browse Jobs
+//                 </Button>
+//               </Paper>
+//             ) : (
+//               <Grid container spacing={3}>
+//                 {applications.map((application) => {
+//                   // Find the corresponding job details
+//                   const job = jobs.find((j) => j.id === application.job_id) || {
+//                     title: "Unknown Position",
+//                     company: "Unknown Company",
+//                     location: "Unknown Location",
+//                     job_type: "Unknown Type",
+//                   }
+
+//                   return (
+//                     <Grid item xs={12} md={6} lg={4} key={application.id}>
+//                       <Card
+//                         sx={{
+//                           height: "100%",
+//                           display: "flex",
+//                           flexDirection: "column",
+//                           borderRadius: 2,
+//                           boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+//                           transition: "transform 0.2s, box-shadow 0.2s",
+//                           "&:hover": {
+//                             transform: "translateY(-4px)",
+//                             boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+//                           },
+//                         }}
+//                       >
+//                         <CardContent sx={{ flexGrow: 1 }}>
+//                           <Typography variant="h5" component="h2" gutterBottom>
+//                             {job.title}
+//                           </Typography>
+
+//                           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+//                             {job.company && (
+//                               <Chip size="small" label={job.company} icon={<BusinessCenter fontSize="small" />} />
+//                             )}
+//                             {job.location && (
+//                               <Chip size="small" label={job.location} icon={<LocationOn fontSize="small" />} />
+//                             )}
+//                             {job.job_type && (
+//                               <Chip
+//                                 size="small"
+//                                 label={job.job_type}
+//                                 color="primary"
+//                                 variant="outlined"
+//                                 icon={<AccessTime fontSize="small" />}
+//                               />
+//                             )}
+//                             {job.salary && (
+//                               <Chip size="small" label={job.salary} icon={<AttachMoney fontSize="small" />} />
+//                             )}
+//                           </Box>
+
+//                           <Box sx={{ mt: 2 }}>
+//                             <Chip
+//                               label={application.status || "Applied"}
+//                               color={
+//                                 application.status === "Rejected"
+//                                   ? "error"
+//                                   : application.status === "Accepted"
+//                                     ? "success"
+//                                     : "primary"
+//                               }
+//                               sx={{ fontWeight: "bold" }}
+//                             />
+//                             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+//                               Applied on: {new Date(application.created_at || Date.now()).toLocaleDateString()}
+//                             </Typography>
+//                           </Box>
+//                         </CardContent>
+
+//                         <CardActions sx={{ p: 2, pt: 0, justifyContent: "flex-end" }}>
+//                           <Button
+//                             variant="outlined"
+//                             color="secondary"
+//                             startIcon={<ChatIcon />}
+//                             onClick={() =>
+//                               handleChatOpen({
+//                                 id: job.recruiterId,
+//                                 name: job.recruiterName || "Recruiter",
+//                               })
+//                             }
+//                             sx={{ borderRadius: 2 }}
+//                           >
+//                             Contact Recruiter
+//                           </Button>
+//                         </CardActions>
+//                       </Card>
+//                     </Grid>
+//                   )
+//                 })}
 //               </Grid>
 //             )}
 //           </>
@@ -1053,7 +1180,7 @@ const CandidateDashboard = () => {
           return
         }
 
-        const response = await axios.get("http://localhost:5000/api/profile", {
+        const response = await axios.get("http://localhost:5000/api/candidate/profile", {
           headers: { Authorization: `Bearer ${token}` },
         })
 
@@ -1061,8 +1188,14 @@ const CandidateDashboard = () => {
         setLoading(false)
       } catch (error) {
         console.error("Auth verification failed:", error)
-        localStorage.removeItem("token")
-        navigate("/login")
+        // Only remove token and redirect if it's an authentication error (401)
+        if (error.response && error.response.status === 401) {
+          localStorage.removeItem("token")
+          navigate("/login")
+        } else {
+          // For other errors, just set loading to false but don't redirect
+          setLoading(false)
+        }
       }
     }
 
@@ -1317,19 +1450,19 @@ const CandidateDashboard = () => {
       </Box>
       <Divider />
       <List>
-        <ListItem button component={Link} to="/candidate-dashboard" selected={tabValue === 0}>
+        <ListItem button onClick={() => setTabValue(0)} selected={tabValue === 0}>
           <ListItemIcon>
             <Dashboard />
           </ListItemIcon>
           <ListItemText primary="Dashboard" />
         </ListItem>
-        <ListItem button component={Link} to="/candidate/jobs" selected={tabValue === 0}>
+        <ListItem button onClick={() => setTabValue(0)} selected={tabValue === 0}>
           <ListItemIcon>
             <Work />
           </ListItemIcon>
           <ListItemText primary="Browse Jobs" />
         </ListItem>
-        <ListItem button component={Link} to="/candidate/applications" selected={tabValue === 1}>
+        <ListItem button onClick={() => setTabValue(1)} selected={tabValue === 1}>
           <ListItemIcon>
             <Description />
           </ListItemIcon>
@@ -1348,6 +1481,12 @@ const CandidateDashboard = () => {
             <Person />
           </ListItemIcon>
           <ListItemText primary="Profile" />
+        </ListItem>
+        <ListItem button component={Link} to="/candidate/profile/edit">
+          <ListItemIcon>
+            <Person />
+          </ListItemIcon>
+          <ListItemText primary="Edit Profile" />
         </ListItem>
         <ListItem button component={Link} to="/candidate/settings">
           <ListItemIcon>
@@ -1475,7 +1614,7 @@ const CandidateDashboard = () => {
           <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
             <Tab label="Available Jobs" icon={<Work />} iconPosition="start" />
             <Tab
-               label={`Applied Jobs${applications.length > 0 ? ` (${applications.length})` : ""}`}
+              label={`Applied Jobs${applications.length > 0 ? ` (${applications.length})` : ""}`}
               icon={<Description />}
               iconPosition="start"
               component={Link}
