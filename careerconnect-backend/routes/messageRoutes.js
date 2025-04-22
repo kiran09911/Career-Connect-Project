@@ -1,10 +1,12 @@
-const express = require('express');
-const { getMessages, sendMessage } = require('../controllers/messageController');
-const authenticateToken = require('../middleware/authMiddleware');
+const express = require("express");
+const { getMessages, sendMessage } = require("../controllers/messageController");
 
 const router = express.Router();
 
-router.get('/:conversationId', authenticateToken, getMessages);
-router.post('/', authenticateToken, sendMessage);
+// Route to fetch all messages for a specific conversation
+router.get("/:conversationId", getMessages);
+
+// Send a new message
+router.post("/", sendMessage);
 
 module.exports = router;

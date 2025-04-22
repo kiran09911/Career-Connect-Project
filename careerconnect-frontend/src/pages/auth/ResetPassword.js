@@ -11,12 +11,20 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters long.");
+      return;
+    }
     try {
-      const res = await axios.post(`http://localhost:5000/reset-password/${token}`, { password });
+      const res = await axios.post(`http://localhost:5000/api/auth/reset-password/${token}`, { password });
       setMessage(res.data.message);
       setTimeout(() => navigate("/login"), 2000);
     } catch (error) {
-      setMessage("Error resetting password.");
+      if (error.response && error.response.data && error.response.data.message) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage("Error resetting password. Please try again.");
+      }
     }
   };
 
@@ -26,7 +34,13 @@ const ResetPassword = () => {
         <h2>Reset Password</h2>
         {message && <p>{message}</p>}
         <form onSubmit={handleSubmit}>
-          <input type="password" placeholder="New Password" onChange={(e) => setPassword(e.target.value)} required />
+          <input
+            type="password"
+            placeholder="New Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
           <button type="submit">Reset Password</button>
         </form>
       </div>

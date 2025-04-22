@@ -63,42 +63,82 @@ exports.login = async (req, res) => {
 exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
+    console.log("Received forgot password request for email:", email);
 
     const connection = await pool.getConnection();
-    const [user] = await connection.query('SELECT * FROM users WHERE email = ?', [email]);
+    console.log("Database connection established.");
+
+    const [user] = await connection.query("SELECT * FROM users WHERE email = ?", [email]);
+    console.log("User query result:", user);
 
     if (user.length === 0) {
       connection.release();
-      return res.status(404).json({ message: 'User with this email does not exist.' });
+      console.log("User not found.");
+      return res.status(404).json({ message: "User with this email does not exist." });
     }
 
-    // Generate a reset token (for simplicity, using a random string here)
     const resetToken = Math.random().toString(36).substring(2, 15);
+    console.log("Generated reset token:", resetToken);
 
-    // Save the reset token in the database (you can also set an expiration time)
-    await connection.query('UPDATE users SET reset_token = ? WHERE email = ?', [resetToken, email]);
+    await connection.query("UPDATE users SET reset_token = ? WHERE email = ?", [resetToken, email]);
     connection.release();
+    console.log("Reset token saved to database.");
 
-    // Send the reset email
     const transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: "Gmail",
       auth: {
-        user: process.env.EMAIL_USER, // Your email address
-        pass: process.env.EMAIL_PASS, // Your email password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
-    const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+    const resetLink = `http://localhost:3000/reset-password/${resetToken}`;
+    console.log("Reset link:", resetLink);
+
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Password Reset Request',
+      subject: "Password Reset Request",
       html: `<p>You requested a password reset. Click <a href="${resetLink}">here</a> to reset your password.</p>`,
     });
+    console.log("Reset email sent.");
 
-    res.json({ message: 'Password reset link has been sent to your email.' });
+    res.json({ message: "Password reset link has been sent to your email." });
   } catch (err) {
-    console.error('Error handling forgot password:', err);
-    res.status(500).json({ message: 'Server error. Please try again later.' });
+    console.error("Error handling forgot password:", err);
+    res.status(500).json({ message: "Server error. Please try again later." });
+  }
+};
+
+
+
+exports.resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  try {
+    const connection = await pool.getConnection();
+
+    // Verify the reset token
+    const [user] = await connection.query("SELECT * FROM users WHERE reset_token = ?", [token]);
+    if (user.length === 0) {
+      connection.release();
+      return res.status(400).json({ message: "Invalid or expired reset token." });
+    }
+
+    // Hash the new password
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    // Update the user's password and clear the reset token
+    await connection.query("UPDATE users SET password = ?, reset_token = NULL WHERE reset_token = ?", [
+      hashedPassword,
+      token,
+    ]);
+    connection.release();
+
+    res.status(200).json({ message: "Password reset successfully." });
+  } catch (err) {
+    console.error("Error resetting password:", err);
+    res.status(500).json({ message: "Server error. Please try again later." });
   }
 };

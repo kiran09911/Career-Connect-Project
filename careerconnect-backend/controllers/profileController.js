@@ -7,7 +7,7 @@ exports.getUserProfile = async (req, res) => {
     const userId = req.user.id;
 
     const connection = await pool.getConnection();
-    const [rows] = await connection.query('SELECT name, email FROM users WHERE id = ?', [userId]);
+    const [rows] = await connection.query('SELECT id, name, email FROM users WHERE id = ?', [userId]);
 
     connection.release();
 
@@ -31,6 +31,13 @@ exports.updateProfile = async (req, res) => {
 
     const userId = req.user.id; // Extract user ID from the token
     const { name, email, phone, gender, degree, institute, permanent_address, current_address } = req.body;
+
+    // Parse JSON fields if they are strings
+    const parsedPermanentAddress =
+      typeof permanent_address === "string" ? JSON.parse(permanent_address) : permanent_address;
+    const parsedCurrentAddress =
+      typeof current_address === "string" ? JSON.parse(current_address) : current_address;
+
 
     // Check if all required fields are provided
     if (!name || !email || !phone || !gender || !degree || !institute || !permanent_address || !current_address) {
@@ -56,8 +63,9 @@ exports.updateProfile = async (req, res) => {
         gender,
         degree,
         institute,
-        JSON.stringify(permanent_address),
-        JSON.stringify(current_address),
+        JSON.stringify(parsedPermanentAddress),
+        JSON.stringify(parsedCurrentAddress),
+
         profilePhotoPath,
         userId,
       ]

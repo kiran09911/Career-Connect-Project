@@ -71,19 +71,13 @@ const Register = () => {
     try {
       const response = await axios.post("http://localhost:5000/api/auth/register", formData);
   
-      // Store token if automatically logged in after registration
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("userRole", formData.role);
-        navigate(formData.role === "recruiter" ? "/recruiter-dashboard" : "/candidate-dashboard");
-      } else {
-        setAlert({
-          open: true,
-          message: "Registration successful! Please login.",
-          severity: "success",
-        });
-        navigate("/login");
-      }
+      // Show success message and redirect to login page
+      setAlert({
+        open: true,
+        message: "Registration successful! Please login.",
+        severity: "success",
+      });
+      navigate("/login");
     } catch (error) {
       let message = "Error during registration";
       if (error.response) {
