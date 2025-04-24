@@ -29,7 +29,7 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api', applicationRoutes);
 app.use('/api', profileRoutes);
-app.use('/api/messages', messageRoutes);
+app.use('/api', messageRoutes);
 app.use('/api/user', userRoutes);
 
 

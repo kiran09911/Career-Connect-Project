@@ -1,47 +1,62 @@
-// import React, { useState, useEffect } from "react";
+
+// "use client"
+
+// import { useState, useEffect } from "react";
 // import axios from "axios";
-// import {
-//   Box,
-//   Typography,
-//   TextField,
-//   Button,
-//   Avatar,
-//   IconButton,
-// } from "@mui/material";
-// import { Send } from "@mui/icons-material";
+// import { Box, TextField, Button, List, ListItem, ListItemText, Typography } from "@mui/material";
 
 // const Message = ({ currentUser, conversationId, receiverId, receiverName }) => {
 //   const [messages, setMessages] = useState([]);
 //   const [newMessage, setNewMessage] = useState("");
 
-//   // Fetch messages for the conversation
 //   useEffect(() => {
+//     console.log("Message.js props:", { conversationId, currentUser, receiverId, receiverName });
+//     if (!currentUser?.id) {
+//       console.error("currentUser.id is undefined or null. Cannot fetch messages.");
+//       return;
+//     }
+
 //     const fetchMessages = async () => {
-//       if (!conversationId) return;
+//       if (!conversationId) {
+//         console.error("Missing conversationId");
+//         return;
+//       }
 
 //       try {
 //         const token = localStorage.getItem("token");
 //         const response = await axios.get(
-//           `http://localhost:5000/api/messages/${conversationId}`,
+//           `http://localhost:5000/api/messages/${conversationId}?currentUserId=${currentUser.id}`,
 //           {
 //             headers: { Authorization: `Bearer ${token}` },
 //           }
 //         );
-//         console.log("Fetched messages:", response.data); // Debugging line
-//         // setMessages(response.data || []);
+//         console.log("Fetched messages:", response.data);
+//         // Log sender_id and currentUser.id comparison for each message
+//         response.data.forEach((msg, index) => {
+//           console.log(`Message ${index}:`, {
+//             sender_id: msg.sender_id,
+//             sender_id_type: typeof msg.sender_id,
+//             currentUser_id: currentUser.id,
+//             currentUser_id_type: typeof currentUser.id,
+//             isSender: String(msg.sender_id) === String(currentUser.id),
+//           });
+//         });
 //         setMessages(response.data);
 //       } catch (err) {
-//         console.error("Error fetching messages:", err.response?.data || err.message);
+//         console.error("Error fetching messages:", {
+//           message: err.message,
+//           response: err.response?.data,
+//           status: err.response?.status,
+//         });
 //       }
 //     };
 
 //     fetchMessages();
-//   }, [conversationId]);
+//   }, [conversationId, currentUser?.id]);
 
-//   // Send a new message
 //   const handleSendMessage = async () => {
 //     if (!newMessage.trim() || !conversationId || !currentUser?.id || !receiverId) {
-//       console.error("Invalid message or missing required fields:", {
+//       console.error("Invalid message or missing fields:", {
 //         newMessage,
 //         conversationId,
 //         senderId: currentUser?.id,
@@ -49,7 +64,7 @@
 //       });
 //       return;
 //     }
-  
+
 //     try {
 //       const token = localStorage.getItem("token");
 //       console.log("Sending message:", {
@@ -58,7 +73,6 @@
 //         receiverId,
 //         content: newMessage,
 //       });
-  
 //       const response = await axios.post(
 //         "http://localhost:5000/api/messages",
 //         {
@@ -69,114 +83,93 @@
 //         },
 //         { headers: { Authorization: `Bearer ${token}` } }
 //       );
-  
+
+//       console.log("Message sent:", response.data);
 //       setMessages((prev) => [...prev, response.data]);
 //       setNewMessage("");
 //     } catch (err) {
-//       console.error("Error sending message:", err.response?.data || err.message);
+//       console.error("Error sending message:", {
+//         message: err.message,
+//         response: err.response?.data,
+//         status: err.response?.status,
+//       });
 //     }
 //   };
 
 //   return (
-//     <Box
-//       sx={{
-//         display: "flex",
-//         flexDirection: "column",
-//         height: "100%",
-//         borderRadius: 2,
-//         boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-//         overflow: "hidden",
-//       }}
-//     >
-//       {/* Chat Header */}
-//       <Box
-//         sx={{
-//           p: 2,
-//           borderBottom: "1px solid",
-//           borderColor: "divider",
-//           display: "flex",
-//           alignItems: "center",
-//           gap: 2,
-//         }}
-//       >
-//         <Avatar>{receiverName?.charAt(0) || "?"}</Avatar>
-//         <Typography variant="h6">{receiverName || "Chat"}</Typography>
-//       </Box>
-
-//       {/* Chat Messages */}
-//       <Box
-//         sx={{
-//           flexGrow: 1,
-//           p: 2,
-//           overflowY: "auto",
-//           display: "flex",
-//           flexDirection: "column",
-//           gap: 1,
-//         }}
-//       >
-//         {messages.length === 0 ? (
-//           <Typography color="text.secondary" align="center">
-//             No messages yet. Start the conversation!
-//           </Typography>
-//         ) : (
-//           messages.map((msg, index) => (
+//     <Box sx={{ display: "flex", flexDirection: "column", height: "400px" }}>
+//       <List sx={{ flexGrow: 1, overflowY: "auto", padding: "8px" }}>
+//         {messages.map((msg) => (
+//           <ListItem
+//             key={msg.id}
+//             sx={{
+//               display: "flex",
+//               justifyContent: String(msg.sender_id) === String(currentUser.id) ? "flex-end" : "flex-start",
+//               padding: "4px 8px",
+//             }}
+//           >
 //             <Box
-//               key={index}
 //               sx={{
-//                 alignSelf: msg.sender_id === currentUser.id ? "flex-end" : "flex-start",
 //                 maxWidth: "70%",
-//                 bgcolor: msg.sender_id === currentUser.id ? "primary.light" : "grey.100",
-//                 color: msg.sender_id === currentUser.id ? "white" : "text.primary",
-//                 p: 2,
-//                 borderRadius: 2,
-//                 boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+//                 display: "flex",
+//                 flexDirection: "column",
+//                 alignItems: String(msg.sender_id) === String(currentUser.id) ? "flex-end" : "flex-start",
 //               }}
 //             >
-//               <Typography variant="body2">{msg.content}</Typography>
+//               <Typography
+//                 variant="body1"
+//                 sx={{
+//                   backgroundColor: String(msg.sender_id) === String(currentUser.id) ? "#1976d2" : "#e0e0e0",
+//                   color: String(msg.sender_id) === String(currentUser.id) ? "white" : "black",
+//                   borderRadius: "12px",
+//                   padding: "8px 12px",
+//                   marginBottom: "4px",
+//                   wordBreak: "break-word",
+//                   boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
+//                 }}
+//               >
+//                 {msg.content}
+//               </Typography>
 //               <Typography
 //                 variant="caption"
 //                 sx={{
-//                   display: "block",
-//                   mt: 0.5,
-//                   opacity: 0.8,
-//                   textAlign: "right",
+//                   color: "text.secondary",
+//                   fontSize: "0.75rem",
 //                 }}
 //               >
-//                 {new Date(msg.created_at).toLocaleTimeString([], {
-//                   hour: "2-digit",
-//                   minute: "2-digit",
-//                 })}
+//                 {new Date(msg.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true })}
 //               </Typography>
 //             </Box>
-//           ))
-//         )}
-//       </Box>
-
-//       {/* Chat Input */}
-//       <Box
-//         sx={{
-//           p: 2,
-//           borderTop: "1px solid",
-//           borderColor: "divider",
-//           display: "flex",
-//           gap: 1,
-//         }}
-//       >
+//           </ListItem>
+//         ))}
+//       </List>
+//       <Box sx={{ display: "flex", padding: "8px", borderTop: "1px solid #e0e0e0" }}>
 //         <TextField
 //           fullWidth
+//           value={newMessage}
+//           onChange={(e) => setNewMessage(e.target.value)}
 //           placeholder="Type a message..."
 //           variant="outlined"
 //           size="small"
-//           value={newMessage}
-//           onChange={(e) => setNewMessage(e.target.value)}
-//           onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+//           sx={{
+//             "& .MuiOutlinedInput-root": {
+//               borderRadius: "20px",
+//               backgroundColor: "#f5f5f5",
+//             },
+//           }}
 //         />
 //         <Button
 //           variant="contained"
-//           color="primary"
-//           endIcon={<Send />}
 //           onClick={handleSendMessage}
-//           disabled={!newMessage.trim()}
+//           sx={{
+//             marginLeft: "8px",
+//             borderRadius: "20px",
+//             padding: "8px 16px",
+//             backgroundColor: "#1976d2",
+//             "&:hover": {
+//               backgroundColor: "#1565c0",
+//             },
+//           }}
 //         >
 //           Send
 //         </Button>
@@ -189,79 +182,107 @@
 
 "use client"
 
-import { useState, useEffect } from "react"
-import axios from "axios"
-import { Box, Typography, TextField, Button, Avatar, List, ListItem } from "@mui/material"
-import { Send } from "@mui/icons-material"
+import { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import { Box, TextField, Button, List, ListItem, Typography } from "@mui/material";
 
 const Message = ({ currentUser, conversationId, receiverId, receiverName }) => {
-  const [messages, setMessages] = useState([])
-  const [newMessage, setNewMessage] = useState("")
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
+  const messagesEndRef = useRef(null);
+  const pollingIntervalRef = useRef(null);
 
-  // Fetch messages for the conversation
-  // useEffect(() => {
-  //   const fetchMessages = async () => {
-  //     if (!conversationId) return
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  //     try {
-  //       const token = localStorage.getItem("token")
-  //       const response = await axios.get(`http://localhost:5000/api/messages/${conversationId}`, {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       })
-  //       // console.log("Fetched messages:", response.data) // Debugging line
-  //       setMessages(response.data)
-  //       console.log("Current User ID:", currentUser?.id);
-  //     console.log("Fetched Messages:", response.data);
-  //     } catch (err) {
-  //       console.error("Error fetching messages:", err.response?.data || err.message)
-  //     }
-  //   }
-
-  //   fetchMessages()
-  // }, [conversationId])
-
-  // Fetch messages for the conversation
-useEffect(() => {
   const fetchMessages = async () => {
-    if (!conversationId || !currentUser?.id) return;
+    if (!conversationId) {
+      console.error("Missing conversationId in fetchMessages");
+      return;
+    }
+
+    if (!currentUser?.id) {
+      console.error("currentUser.id is undefined or null. Cannot fetch messages.");
+      return;
+    }
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get(`http://localhost:5000/api/messages/${conversationId}?currentUserId=${currentUser.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get(
+        `http://localhost:5000/api/messages/${conversationId}?currentUserId=${currentUser.id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log(`Fetched messages for conversationId ${conversationId}:`, response.data);
+      response.data.forEach((msg, index) => {
+        console.log(`Message ${index}:`, {
+          sender_id: msg.sender_id,
+          sender_id_type: typeof msg.sender_id,
+          currentUser_id: currentUser.id,
+          currentUser_id_type: typeof currentUser.id,
+          isSender: String(msg.sender_id) === String(currentUser.id),
+          content: msg.content,
+          created_at: msg.created_at,
+        });
       });
-      console.log("Fetched messages:", response.data); // Debugging line
-      setMessages(response.data);
+
+      setMessages((prevMessages) => {
+        const existingMessageIds = new Set(prevMessages.map((msg) => msg.id));
+        const newMessages = response.data.filter((msg) => !existingMessageIds.has(msg.id));
+        return [...prevMessages, ...newMessages].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      });
     } catch (err) {
-      console.error("Error fetching messages:", err.response?.data || err.message);
+      console.error("Error fetching messages:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
     }
   };
 
-  fetchMessages();
-}, [conversationId, currentUser?.id]);
+  useEffect(() => {
+    console.log("Message.js props:", { conversationId, currentUser, receiverId, receiverName });
 
+    fetchMessages();
 
-  // Send a new message
+    pollingIntervalRef.current = setInterval(() => {
+      console.log(`Polling messages for conversationId ${conversationId}`);
+      fetchMessages();
+    }, 5000);
+
+    return () => {
+      console.log(`Clearing polling interval for conversationId ${conversationId}`);
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [conversationId, currentUser?.id]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !conversationId || !currentUser?.id || !receiverId) {
-      console.error("Invalid message or missing required fields:", {
+      console.error("Invalid message or missing fields:", {
         newMessage,
         conversationId,
         senderId: currentUser?.id,
         receiverId,
-      })
-      return
+      });
+      return;
     }
 
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       console.log("Sending message:", {
         conversationId,
         senderId: currentUser.id,
         receiverId,
         content: newMessage,
-      })
-
+      });
       const response = await axios.post(
         "http://localhost:5000/api/messages",
         {
@@ -270,130 +291,105 @@ useEffect(() => {
           receiverId,
           content: newMessage,
         },
-        { headers: { Authorization: `Bearer ${token}` } },
-      )
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      setMessages((prev) => [...prev, response.data])
-      setNewMessage("")
+      console.log("Message sent:", response.data);
+      await fetchMessages();
+      setNewMessage("");
     } catch (err) {
-      console.error("Error sending message:", err.response?.data || err.message)
+      console.error("Error sending message:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+      });
     }
-  }
+  };
 
+  
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-        borderRadius: 2,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-        overflow: "hidden",
-      }}
-    >
-      {/* Chat Header */}
-      <Box
-        sx={{
-          p: 2,
-          borderBottom: "1px solid",
-          borderColor: "divider",
-          display: "flex",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
-        <Avatar>{receiverName?.charAt(0) || "?"}</Avatar>
-        <Typography variant="h6">{receiverName || "Chat"}</Typography>
-      </Box>
-
-      {/* Chat Messages */}
-      <Box
-        sx={{
-          flexGrow: 1,
-          p: 2,
-          overflowY: "auto",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        {messages.length === 0 ? (
-          <Typography color="text.secondary" align="center">
-            No messages yet. Start the conversation!
-          </Typography>
-        ) : (
-          <List sx={{ width: "100%", padding: 0 }}>
-            {messages.map((msg, index) => (
-              <ListItem
-                key={index}
+    <Box sx={{ display: "flex", flexDirection: "column", height: "400px" }}>
+      <List sx={{ flexGrow: 1, overflowY: "auto", padding: "8px" }}>
+        {messages.map((msg) => (
+          <ListItem
+            key={msg.id}
+            sx={{
+              display: "flex",
+              justifyContent: String(msg.sender_id) === String(currentUser.id) ? "flex-end" : "flex-start",
+              padding: "4px 8px",
+            }}
+          >
+            <Box
+              sx={{
+                maxWidth: "70%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: String(msg.sender_id) === String(currentUser.id) ? "flex-end" : "flex-start",
+              }}
+            >
+              <Typography
+                variant="body1"
                 sx={{
-                  justifyContent: msg.sender_id === currentUser.id ? "flex-end" : "flex-start", // Sent messages on the right, received on the left
-                  padding: "4px 0",
+                  backgroundColor: String(msg.sender_id) === String(currentUser.id) ? "#1976d2" : "#e0e0e0",
+                  color: String(msg.sender_id) === String(currentUser.id) ? "white" : "black",
+                  borderRadius: "12px",
+                  padding: "8px 12px",
+                  marginBottom: "4px",
+                  wordBreak: "break-word",
+                  boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
                 }}
-                disableGutters
               >
-                <Box
-                  sx={{
-                    bgcolor: msg.sender_id === currentUser.id ? "primary.light" : "grey.200", // Different background colors
-                    color: msg.sender_id === currentUser.id ? "white" : "text.primary",
-                    p: 2,
-                    borderRadius: 2,
-                    maxWidth: "70%",
-                    boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <Typography variant="body2">{msg.content}</Typography>
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      display: "block",
-                      mt: 0.5,
-                      opacity: 0.8,
-                      textAlign: "right",
-                    }}
-                  >
-                    {new Date(msg.created_at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Typography>
-                </Box>
-              </ListItem>
-            ))}
-          </List>
-        )}
-      </Box>
-
-      {/* Chat Input */}
-      <Box
-        sx={{
-          p: 2,
-          borderTop: "1px solid",
-          borderColor: "divider",
-          display: "flex",
-          gap: 1,
-        }}
-      >
+                {msg.content}
+              </Typography>
+              <Typography
+                variant="caption"
+                sx={{
+                  color: "text.secondary",
+                  fontSize: "0.75rem",
+                }}
+              >
+                {new Date(msg.created_at).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true })}
+              </Typography>
+            </Box>
+          </ListItem>
+        ))}
+      </List>
+      <Box sx={{ display: "flex", padding: "8px", borderTop: "1px solid #e0e0e0" }}>
         <TextField
           fullWidth
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Type a message..."
           variant="outlined"
           size="small"
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "20px",
+              backgroundColor: "#f5f5f5",
+            },
+          }}
         />
         <Button
           variant="contained"
-          color="primary"
-          endIcon={<Send />}
           onClick={handleSendMessage}
-          disabled={!newMessage.trim()}
+          sx={{
+            marginLeft: "8px",
+            borderRadius: "20px",
+            padding: "8px 16px",
+            backgroundColor: "#1976d2",
+            "&:hover": {
+              backgroundColor: "#1565c0",
+            },
+          }}
         >
           Send
         </Button>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default Message
+export default Message;
+
+
+  

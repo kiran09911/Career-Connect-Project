@@ -1,12 +1,25 @@
+// const express = require("express");
+// const { getMessages, sendMessage, getOrCreateConversation } = require("../controllers/messageController");
+
+// const router = express.Router();
+
+// // Route to fetch all messages for a specific conversation
+// // router.get("/:conversationId", getMessages);
+// router.get('/messages/:conversationId', getMessages);
+// // Send a new message
+// router.post("/messages", sendMessage);
+
+// router.post("/conversations", getOrCreateConversation);
+
+// module.exports = router;
+
 const express = require("express");
-const { getMessages, sendMessage } = require("../controllers/messageController");
-
 const router = express.Router();
+const { getMessages, sendMessage, getOrCreateConversation } = require("../controllers/messageController");
 
-// Route to fetch all messages for a specific conversation
-router.get("/:conversationId", getMessages);
+router.post("/conversations", getOrCreateConversation);
 
-// Send a new message
-router.post("/", sendMessage);
+router.get("/messages/:conversationId", getMessages);
+router.post("/messages", sendMessage);
 
 module.exports = router;

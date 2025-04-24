@@ -1,27 +1,20 @@
-// // CandidateDashboard.js
 // "use client"
 
-// import React, { useState, useEffect } from "react";
+// import { useState, useEffect } from "react"
 // import { useNavigate, Link } from "react-router-dom"
 // import axios from "axios"
-// import { io } from "socket.io-client"
-
-
+// import Message from "../../components/chat/Message"
 // import {
 //   AppBar,
 //   Toolbar,
 //   Typography,
 //   Button,
 //   IconButton,
-//   Badge,
 //   Avatar,
 //   CircularProgress,
 //   List,
 //   ListItem,
 //   ListItemText,
-//   Dialog,
-//   DialogTitle,
-//   DialogContent,
 //   TextField,
 //   Box,
 //   Drawer,
@@ -42,6 +35,9 @@
 //   Alert,
 //   Tab,
 //   Tabs,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
 // } from "@mui/material"
 // import {
 //   Chat as ChatIcon,
@@ -54,7 +50,6 @@
 //   BusinessCenter,
 //   Description,
 //   Settings,
-//   Send,
 //   LocationOn,
 //   AttachMoney,
 //   AccessTime,
@@ -69,35 +64,14 @@
 //   const [loading, setLoading] = useState(true)
 //   const [jobs, setJobs] = useState([])
 //   const [filteredJobs, setFilteredJobs] = useState([])
-//   const [conversations, setConversations] = useState([])
-//   const [unreadCounts, setUnreadCounts] = useState({})
-//   const [showChat, setShowChat] = useState(false)
-//   const [selectedChat, setSelectedChat] = useState(null)
-//   const [socket, setSocket] = useState(null)
-//   const [messages, setMessages] = useState([])
-//   const [newMessage, setNewMessage] = useState("")
 //   const [searchTerm, setSearchTerm] = useState("")
 //   const [drawerOpen, setDrawerOpen] = useState(false)
 //   const [anchorEl, setAnchorEl] = useState(null)
 //   const [tabValue, setTabValue] = useState(0)
 //   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" })
 //   const [applications, setApplications] = useState([])
-
-//   // Initialize socket connection
-//   useEffect(() => {
-//     const newSocket = io("http://localhost:5000", {
-//       autoConnect: false,
-//       withCredentials: true,
-//       auth: {
-//         token: localStorage.getItem("token"),
-//       },
-//     })
-//     setSocket(newSocket)
-
-//     return () => {
-//       newSocket.disconnect()
-//     }
-//   }, [])
+//   const [showChat, setShowChat] = useState(false)
+//   const [selectedConversation, setSelectedConversation] = useState(null)
 
 //   // Verify authentication and fetch user data
 //   useEffect(() => {
@@ -105,32 +79,31 @@
 //       try {
 //         const token = localStorage.getItem("token")
 //         if (!token) {
-//           navigate("/login")
+//           navigate("/login");
 //           return
 //         }
 
 //         const response = await axios.get("http://localhost:5000/api/candidate/profile", {
 //           headers: { Authorization: `Bearer ${token}` },
-//         })
-
-//         setCurrentUser(response.data)
-//         setLoading(false)
+//         });
+//         console.log("Fetched currentUser:", response.data); // Debugging line
+//         setCurrentUser(response.data);
+//         setLoading(false);
 //       } catch (error) {
 //         console.error("Auth verification failed:", error)
-//         // Only remove token and redirect if it's an authentication error (401)
 //         if (error.response && error.response.status === 401) {
-//           localStorage.removeItem("token")
-//           navigate("/login")
+//           localStorage.removeItem("token");
+//           navigate("/login");
 //         } else {
-//           // For other errors, just set loading to false but don't redirect
-//           setLoading(false)
+//           setLoading(false);
 //         }
 //       }
 //     }
 
-//     verifyAuth()
-//   }, [navigate])
+//     verifyAuth();
+//   }, [navigate]);
 
+ 
 //   // Fetch available jobs
 //   useEffect(() => {
 //     const fetchJobs = async () => {
@@ -165,59 +138,6 @@
 //     fetchApplications()
 //   }, [currentUser])
 
-//   // Fetch conversations
-//   useEffect(() => {
-//     if (!currentUser?.id) return;
-  
-//     const fetchConversations = async () => {
-//       try {
-//         const token = localStorage.getItem("token");
-//         const response = await axios.get(`http://localhost:5000/api/conversations/${currentUser.id}`, {
-//           headers: { Authorization: `Bearer ${token}` },
-//         });
-  
-//         setConversations(response.data || []);
-  
-//         const counts = {};
-//         (response.data || []).forEach((conv) => {
-//           counts[conv.id] = conv.unread_count || 0;
-//         });
-//         setUnreadCounts(counts);
-//       } catch (err) {
-//         console.error("Error fetching conversations:", err);
-//       }
-//     };
-  
-//     fetchConversations();
-//   }, [currentUser]);
-
-//   // Socket event listeners
-//   useEffect(() => {
-//     if (!socket || !currentUser?.id) return
-
-//     socket.connect()
-
-//     const handleNewMessage = (message) => {
-//       if (message.conversation_id && message.sender_id !== currentUser?.id) {
-//         setUnreadCounts((prev) => ({
-//           ...prev,
-//           [message.conversation_id]: (prev[message.conversation_id] || 0) + 1,
-//         }))
-
-//         // If chat is open and it's the current conversation, add message to the list
-//         if (showChat && selectedChat?.id === message.conversation_id) {
-//           setMessages((prev) => [...prev, message])
-//         }
-//       }
-//     }
-
-//     socket.on("receiveMessage", handleNewMessage)
-
-//     return () => {
-//       socket.off("receiveMessage", handleNewMessage)
-//     }
-//   }, [socket, currentUser, showChat, selectedChat])
-
 //   // Filter jobs based on search term
 //   useEffect(() => {
 //     if (searchTerm.trim() === "") {
@@ -249,7 +169,6 @@
 //         severity: "success",
 //       })
 
-//       // Refresh applications list
 //       const response = await axios.get("http://localhost:5000/api/applications/candidate", {
 //         headers: { Authorization: `Bearer ${token}` },
 //       })
@@ -264,78 +183,7 @@
 //     }
 //   }
 
-//   const handleChatOpen = (chat) => {
-//     if (!chat || !chat.id) {
-//       console.error("Invalid chat object:", chat)
-//       return
-//     }
-
-//     setSelectedChat(chat)
-//     setShowChat(true)
-//     setUnreadCounts((prev) => ({
-//       ...prev,
-//       [chat.id]: 0,
-//     }))
-//     fetchMessages(chat.id)
-//   }
-
-//   const fetchMessages = async (conversationId) => {
-//     if (!conversationId) {
-//       console.error("Invalid conversationId:", conversationId);
-//       return;
-//     }
-  
-//     try {
-//       console.log("Fetching messages for conversationId:", conversationId);
-  
-//       // Mock response
-//       const mockResponse = [
-//         {
-//           id: 1,
-//           conversation_id: conversationId,
-//           sender_id: 1,
-//           content: "Hello!",
-//           created_at: new Date().toISOString(),
-//         },
-//       ];
-  
-//       console.log("Mock messages fetched:", mockResponse);
-//       setMessages(mockResponse);
-//     } catch (err) {
-//       console.error("Error fetching messages:", err);
-//     }
-//   };
-
-//   const handleSendMessage = async () => {
-//     if (!newMessage.trim() || !selectedChat?.id) {
-//       console.error("Invalid message or conversation ID:", { newMessage, selectedChat });
-//       return;
-//     }
-  
-//     try {
-//       const token = localStorage.getItem("token");
-//       console.log("Sending message:", { conversationId: selectedChat.id, content: newMessage });
-  
-//       const response = await axios.post(
-//         "http://localhost:5000/api/messages",
-//         { conversationId: selectedChat.id, content: newMessage },
-//         { headers: { Authorization: `Bearer ${token}` } }
-//       );
-  
-//       setMessages((prev) => [...prev, response.data]);
-//       setNewMessage("");
-//     } catch (err) {
-//       console.error("Error sending message:", err);
-//       setSnackbar({
-//         open: true,
-//         message: "Failed to send message. Please try again.",
-//         severity: "error",
-//       });
-//     }
-//   };
-  
 //   const handleLogout = () => {
-//     if (socket) socket.disconnect()
 //     localStorage.clear()
 //     navigate("/login")
 //   }
@@ -346,6 +194,21 @@
 
 //   const handleProfileMenuClose = () => {
 //     setAnchorEl(null)
+//   }
+
+//   // Open chat for a specific recruiter
+//   const handleChatOpen = (conversation) => {
+//     console.log("handleChatOpen called with:", conversation)
+
+//     if (!conversation || !conversation.id) {
+//       console.error("Invalid conversation object:", conversation)
+//       return
+//     }
+
+//     setSelectedConversation(conversation)
+//     setShowChat(true)
+   
+
 //   }
 
 //   const handleTabChange = (event, newValue) => {
@@ -364,12 +227,9 @@
 //     )
 //   }
 
-//   // Check if a job has already been applied to
 //   const hasApplied = (jobId) => {
 //     return applications.some((app) => app.job_id === jobId)
 //   }
-
-//   const totalUnreadMessages = Object.values(unreadCounts).reduce((a, b) => a + b, 0)
 
 //   const drawerContent = (
 //     <Box sx={{ width: 250 }}>
@@ -410,14 +270,6 @@
 //             <Description />
 //           </ListItemIcon>
 //           <ListItemText primary="Applied Jobs" />
-//         </ListItem>
-//         <ListItem button onClick={() => setShowChat(true)}>
-//           <ListItemIcon>
-//             <Badge badgeContent={totalUnreadMessages} color="error">
-//               <ChatIcon />
-//             </Badge>
-//           </ListItemIcon>
-//           <ListItemText primary="Messages" />
 //         </ListItem>
 //         <ListItem button component={Link} to="/candidate/profile">
 //           <ListItemIcon>
@@ -470,11 +322,6 @@
 //           </Typography>
 
 //           <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}>
-//             <IconButton color="inherit" sx={{ mr: 1 }} onClick={() => setShowChat(true)}>
-//               <Badge badgeContent={totalUnreadMessages} color="error">
-//                 <ChatIcon />
-//               </Badge>
-//             </IconButton>
 //             <Button
 //               color="inherit"
 //               onClick={handleProfileMenuOpen}
@@ -524,7 +371,6 @@
 //         </MenuItem>
 //       </Menu>
 
-//       {/* Responsive drawer */}
 //       <Drawer
 //         variant={isMobile ? "temporary" : "permanent"}
 //         open={isMobile ? drawerOpen : true}
@@ -560,9 +406,6 @@
 //               label={`Applied Jobs${applications.length > 0 ? ` (${applications.length})` : ""}`}
 //               icon={<Description />}
 //               iconPosition="start"
-//               component={Link}
-//               to="/candidate/applications"
-//               sx={{ textDecoration: "none" }}
 //             />
 //           </Tabs>
 //         </Box>
@@ -668,17 +511,8 @@
 //                           {job.location && (
 //                             <Chip size="small" label={job.location} icon={<LocationOn fontSize="small" />} />
 //                           )}
-//                           {job.job_type && (
-//                             <Chip
-//                               size="small"
-//                               label={job.job_type}
-//                               color="primary"
-//                               variant="outlined"
-//                               icon={<AccessTime fontSize="small" />}
-//                             />
-//                           )}
 //                           {job.salary && (
-//                             <Chip size="small" label={job.salary} icon={<AttachMoney fontSize="small" />} />
+//                             <Chip size="small" label={`$${job.salary}`} icon={<AttachMoney fontSize="small" />} />
 //                           )}
 //                         </Box>
 
@@ -687,17 +521,6 @@
 //                             ? `${job.description.substring(0, 150)}...`
 //                             : job.description}
 //                         </Typography>
-
-//                         {job.recruiterName && (
-//                           <Box sx={{ mt: 2, display: "flex", alignItems: "center", gap: 1 }}>
-//                             <Avatar sx={{ width: 24, height: 24, bgcolor: "primary.main", fontSize: "0.8rem" }}>
-//                               {job.recruiterName.charAt(0)}
-//                             </Avatar>
-//                             <Typography variant="body2" color="text.secondary">
-//                               Posted by: {job.recruiterName}
-//                             </Typography>
-//                           </Box>
-//                         )}
 //                       </CardContent>
 
 //                       <CardActions sx={{ p: 2, pt: 0, justifyContent: "space-between" }}>
@@ -714,6 +537,7 @@
 //                           {hasApplied(job.id) ? "Applied" : "Apply Now"}
 //                         </Button>
 
+//                         {/* Chat Button */}
 //                         <Button
 //                           variant="outlined"
 //                           color="secondary"
@@ -726,7 +550,7 @@
 //                           }
 //                           sx={{ borderRadius: 2 }}
 //                         >
-//                           Contact
+//                           Chat
 //                         </Button>
 //                       </CardActions>
 //                     </Card>
@@ -767,8 +591,6 @@
 //                 <Button
 //                   variant="contained"
 //                   color="primary"
-//                   component={Link}
-//                   to="/candidate/jobs"
 //                   onClick={() => setTabValue(0)}
 //                   sx={{ mt: 2, borderRadius: 2 }}
 //                 >
@@ -778,7 +600,6 @@
 //             ) : (
 //               <Grid container spacing={3}>
 //                 {applications.map((application) => {
-//                   // Find the corresponding job details
 //                   const job = jobs.find((j) => j.id === application.job_id) || {
 //                     title: "Unknown Position",
 //                     company: "Unknown Company",
@@ -845,23 +666,7 @@
 //                             </Typography>
 //                           </Box>
 //                         </CardContent>
-
-//                         <CardActions sx={{ p: 2, pt: 0, justifyContent: "flex-end" }}>
-//                           <Button
-//                             variant="outlined"
-//                             color="secondary"
-//                             startIcon={<ChatIcon />}
-//                             onClick={() =>
-//                               handleChatOpen({
-//                                 id: job.recruiterId,
-//                                 name: job.recruiterName || "Recruiter",
-//                               })
-//                             }
-//                             sx={{ borderRadius: 2 }}
-//                           >
-//                             Contact Recruiter
-//                           </Button>
-//                         </CardActions>
+//                         <CardActions sx={{ p: 2, pt: 0 }}></CardActions>
 //                       </Card>
 //                     </Grid>
 //                   )
@@ -872,206 +677,20 @@
 //         )}
 
 //         {/* Chat Dialog */}
-//         <Dialog
-//           open={showChat}
-//           onClose={() => setShowChat(false)}
-//           fullWidth
-//           maxWidth="md"
-//           PaperProps={{
-//             sx: {
-//               borderRadius: 2,
-//               boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
-//               height: { xs: "100%", sm: "80vh" },
-//             },
-//           }}
-//         >
-//           <DialogTitle
-//             sx={{
-//               borderBottom: "1px solid",
-//               borderColor: "divider",
-//               display: "flex",
-//               justifyContent: "space-between",
-//               alignItems: "center",
-//             }}
-//           >
-//             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-//               <ChatIcon color="primary" />
-//               <Typography variant="h6">{selectedChat ? `Chat with ${selectedChat.name}` : "Messages"}</Typography>
-//             </Box>
-//             <IconButton onClick={() => setShowChat(false)} size="small">
-//               ×
-//             </IconButton>
-//           </DialogTitle>
-
-//           <DialogContent sx={{ p: 0, display: "flex", height: "100%" }}>
-//             {/* Conversations List */}
-//             <Box
-//               sx={{
-//                 width: { xs: selectedChat ? "0" : "100%", sm: "250px" },
-//                 borderRight: "1px solid",
-//                 borderColor: "divider",
-//                 display: { xs: selectedChat ? "none" : "block", sm: "block" },
-//                 overflow: "auto",
-//               }}
-//             >
-//               <List sx={{ p: 0 }}>
-//                 {conversations.length === 0 ? (
-//                   <Box sx={{ p: 3, textAlign: "center" }}>
-//                     <Typography color="text.secondary">No conversations yet</Typography>
-//                   </Box>
-//                 ) : (
-//                   conversations.map((conv) => (
-//                     <ListItem
-//                       button
-//                       key={conv.id}
-//                       onClick={() => handleChatOpen(conv)}
-//                       selected={selectedChat?.id === conv.id}
-//                       sx={{
-//                         borderBottom: "1px solid",
-//                         borderColor: "divider",
-//                         "&.Mui-selected": {
-//                           bgcolor: "action.selected",
-//                         },
-//                       }}
-//                     >
-//                       <Avatar sx={{ mr: 2 }}>{conv.name?.charAt(0) || "?"}</Avatar>
-//                       <ListItemText
-//                         primary={conv.name || "Unknown"}
-//                         secondary={conv.last_message || "No messages yet"}
-//                         primaryTypographyProps={{
-//                           fontWeight: unreadCounts[conv.id] ? "bold" : "normal",
-//                         }}
-//                       />
-//                       {unreadCounts[conv.id] > 0 && (
-//                         <Badge badgeContent={unreadCounts[conv.id]} color="primary" sx={{ ml: 1 }} />
-//                       )}
-//                     </ListItem>
-//                   ))
-//                 )}
-//               </List>
-//             </Box>
-
-//             {/* Chat Area */}
-//             <Box
-//               sx={{
-//                 flexGrow: 1,
-//                 display: "flex",
-//                 flexDirection: "column",
-//                 display: { xs: selectedChat ? "flex" : "none", sm: "flex" },
-//               }}
-//             >
-//               {selectedChat ? (
-//                 <>
-//                   <Box
-//                     sx={{
-//                       flexGrow: 1,
-//                       p: 2,
-//                       overflowY: "auto",
-//                       display: "flex",
-//                       flexDirection: "column",
-//                       gap: 1,
-//                     }}
-//                   >
-//                     {messages.length === 0 ? (
-//                       <Box
-//                         sx={{
-//                           display: "flex",
-//                           justifyContent: "center",
-//                           alignItems: "center",
-//                           height: "100%",
-//                         }}
-//                       >
-//                         <Typography color="text.secondary">No messages yet. Start the conversation!</Typography>
-//                       </Box>
-//                     ) : (
-//                       messages.map((msg, index) => (
-//                         <Box
-//                           key={index}
-//                           sx={{
-//                             alignSelf: msg.sender_id === currentUser?.id ? "flex-end" : "flex-start",
-//                             maxWidth: "70%",
-//                             bgcolor: msg.sender_id === currentUser?.id ? "primary.light" : "grey.100",
-//                             color: msg.sender_id === currentUser?.id ? "white" : "text.primary",
-//                             p: 2,
-//                             borderRadius: 2,
-//                             boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-//                           }}
-//                         >
-//                           <Typography variant="body2">{msg.content}</Typography>
-//                           <Typography
-//                             variant="caption"
-//                             sx={{
-//                               display: "block",
-//                               mt: 0.5,
-//                               opacity: 0.8,
-//                               textAlign: "right",
-//                             }}
-//                           >
-//                             {new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-//                           </Typography>
-//                         </Box>
-//                       ))
-//                     )}
-//                   </Box>
-
-//                   <Box
-//                     sx={{
-//                       p: 2,
-//                       borderTop: "1px solid",
-//                       borderColor: "divider",
-//                       display: "flex",
-//                       gap: 1,
-//                     }}
-//                   >
-//                     <TextField
-//                       fullWidth
-//                       placeholder="Type a message..."
-//                       variant="outlined"
-//                       size="small"
-//                       value={newMessage}
-//                       onChange={(e) => setNewMessage(e.target.value)}
-//                       onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-//                     />
-//                     <Button
-//                       variant="contained"
-//                       color="primary"
-//                       endIcon={<Send />}
-//                       onClick={handleSendMessage}
-//                       disabled={!newMessage.trim()}
-//                     >
-//                       Send
-//                     </Button>
-//                   </Box>
-//                 </>
-//               ) : (
-//                 <Box
-//                   sx={{
-//                     display: "flex",
-//                     justifyContent: "center",
-//                     alignItems: "center",
-//                     display: "flex",
-//                     justifyContent: "center",
-//                     alignItems: "center",
-//                     height: "100%",
-//                     p: 3,
-//                   }}
-//                 >
-//                   <Box sx={{ textAlign: "center" }}>
-//                     <ChatIcon sx={{ fontSize: 60, color: "text.secondary", opacity: 0.5, mb: 2 }} />
-//                     <Typography variant="h6" gutterBottom>
-//                       Select a conversation
-//                     </Typography>
-//                     <Typography color="text.secondary">
-//                       Choose a conversation from the list to start chatting
-//                     </Typography>
-//                   </Box>
-//                 </Box>
-//               )}
-//             </Box>
+//         <Dialog open={showChat} onClose={() => setShowChat(false)} fullWidth maxWidth="md">
+//           <DialogTitle>Chat with {selectedConversation?.name || "Recruiter"}</DialogTitle>
+//           <DialogContent>
+//             {selectedConversation && (
+//               <Message
+//                 currentUser={currentUser}
+//                 conversationId={selectedConversation.id}
+//                 receiverId={selectedConversation.id}
+//                 receiverName={selectedConversation.name}
+//               />
+//             )}
 //           </DialogContent>
 //         </Dialog>
 
-//         {/* Snackbar for notifications */}
 //         <Snackbar
 //           open={snackbar.open}
 //           autoHideDuration={6000}
@@ -1093,17 +712,12 @@
 // }
 
 // export default CandidateDashboard
-
-
-// CandidateDashboard.js
 // "use client"
 
-// import React, { useState, useEffect } from "react";
+// import { useState, useEffect } from "react"
 // import { useNavigate, Link } from "react-router-dom"
 // import axios from "axios"
-// import { Chat as ChatIcon } from "@mui/icons-material";
-// import Message from "../../components/chat/Message";
-
+// import Message from "../../components/chat/Message"
 // import {
 //   AppBar,
 //   Toolbar,
@@ -1135,8 +749,12 @@
 //   Alert,
 //   Tab,
 //   Tabs,
+//   Dialog,
+//   DialogTitle,
+//   DialogContent,
 // } from "@mui/material"
 // import {
+//   Chat as ChatIcon,
 //   Logout as LogoutIcon,
 //   Menu as MenuIcon,
 //   Dashboard,
@@ -1166,20 +784,8 @@
 //   const [tabValue, setTabValue] = useState(0)
 //   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" })
 //   const [applications, setApplications] = useState([])
-//   const [showChat, setShowChat] = useState(false);
-// const [selectedConversation, setSelectedConversation] = useState(null);
-
-
-// // Render the Message component
-// {console.log("showChat:", showChat, "selectedConversation:", selectedConversation)}
-// {showChat && selectedConversation && (
-//   <Message
-//     currentUser={currentUser}
-//     conversationId={selectedConversation.id}
-//     receiverId={selectedConversation.id}
-//     receiverName={selectedConversation.name}
-//   />
-// )}
+//   const [showChat, setShowChat] = useState(false)
+//   const [selectedConversation, setSelectedConversation] = useState(null)
 
 //   // Verify authentication and fetch user data
 //   useEffect(() => {
@@ -1187,29 +793,29 @@
 //       try {
 //         const token = localStorage.getItem("token")
 //         if (!token) {
-//           navigate("/login")
+//           navigate("/login");
 //           return
 //         }
 
 //         const response = await axios.get("http://localhost:5000/api/candidate/profile", {
 //           headers: { Authorization: `Bearer ${token}` },
-//         })
-
-//         setCurrentUser(response.data)
-//         setLoading(false)
+//         });
+//         console.log("Fetched currentUser:", response.data);
+//         setCurrentUser(response.data);
+//         setLoading(false);
 //       } catch (error) {
 //         console.error("Auth verification failed:", error)
 //         if (error.response && error.response.status === 401) {
-//           localStorage.removeItem("token")
-//           navigate("/login")
+//           localStorage.removeItem("token");
+//           navigate("/login");
 //         } else {
-//           setLoading(false)
+//           setLoading(false);
 //         }
 //       }
 //     }
 
-//     verifyAuth()
-//   }, [navigate])
+//     verifyAuth();
+//   }, [navigate]);
 
 //   // Fetch available jobs
 //   useEffect(() => {
@@ -1304,16 +910,49 @@
 //   }
 
 //   // Open chat for a specific recruiter
-//   const handleChatOpen = (conversation) => {
-//     console.log("handleChatOpen called with:", conversation);
-  
-//     if (!conversation || !conversation.id) {
-//       console.error("Invalid conversation object:", conversation);
+//   const handleChatOpen = async (recruiterId, recruiterName) => {
+//     console.log("handleChatOpen called with:", { recruiterId, recruiterName });
+
+//     if (!recruiterId || !currentUser?.id) {
+//       console.error("Missing recruiterId or currentUser.id");
+//       setSnackbar({
+//         open: true,
+//         message: "Unable to start chat. Please try again.",
+//         severity: "error",
+//       });
 //       return;
 //     }
-  
-//     setSelectedConversation(conversation);
-//     setShowChat(true);
+
+//     try {
+//       const token = localStorage.getItem("token");
+//       const response = await axios.post(
+//         "http://localhost:5000/api/conversations",
+//         {
+//           user1Id: currentUser.id,
+//           user2Id: recruiterId,
+//         },
+//         {
+//           headers: { Authorization: `Bearer ${token}` },
+//         }
+//       );
+
+//       const conversationId = response.data.conversationId;
+//       console.log("Fetched conversationId:", conversationId);
+
+//       setSelectedConversation({
+//         id: conversationId,
+//         name: recruiterName || "Recruiter",
+//         receiverId: recruiterId,
+//       });
+//       setShowChat(true);
+//     } catch (err) {
+//       console.error("Error fetching conversation ID:", err.response?.data || err.message);
+//       setSnackbar({
+//         open: true,
+//         message: "Failed to start chat. Please try again.",
+//         severity: "error",
+//       });
+//     }
 //   };
 
 //   const handleTabChange = (event, newValue) => {
@@ -1511,9 +1150,6 @@
 //               label={`Applied Jobs${applications.length > 0 ? ` (${applications.length})` : ""}`}
 //               icon={<Description />}
 //               iconPosition="start"
-//               component={Link}
-//               to="/candidate/applications"
-//               sx={{ textDecoration: "none" }}
 //             />
 //           </Tabs>
 //         </Box>
@@ -1591,80 +1227,74 @@
 //               </Paper>
 //             ) : (
 //               <Grid container spacing={3}>
-//   {filteredJobs.map((job) => (
-//     <Grid item xs={12} md={6} lg={4} key={job.id}>
-//       <Card
-//         sx={{
-//           height: "100%",
-//           display: "flex",
-//           flexDirection: "column",
-//           borderRadius: 2,
-//           boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-//           transition: "transform 0.2s, box-shadow 0.2s",
-//           "&:hover": {
-//             transform: "translateY(-4px)",
-//             boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-//           },
-//         }}
-//       >
-//         <CardContent sx={{ flexGrow: 1 }}>
-//           <Typography variant="h5" component="h2" gutterBottom>
-//             {job.title}
-//           </Typography>
+//                 {filteredJobs.map((job) => (
+//                   <Grid item xs={12} md={6} lg={4} key={job.id}>
+//                     <Card
+//                       sx={{
+//                         height: "100%",
+//                         display: "flex",
+//                         flexDirection: "column",
+//                         borderRadius: 2,
+//                         boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+//                         transition: "transform 0.2s, box-shadow 0.2s",
+//                         "&:hover": {
+//                           transform: "translateY(-4px)",
+//                           boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+//                         },
+//                       }}
+//                     >
+//                       <CardContent sx={{ flexGrow: 1 }}>
+//                         <Typography variant="h5" component="h2" gutterBottom>
+//                           {job.title}
+//                         </Typography>
 
-//           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
-//             {job.company && (
-//               <Chip size="small" label={job.company} icon={<BusinessCenter fontSize="small" />} />
-//             )}
-//             {job.location && (
-//               <Chip size="small" label={job.location} icon={<LocationOn fontSize="small" />} />
-//             )}
-//             {job.salary && (
-//               <Chip size="small" label={`$${job.salary}`} icon={<AttachMoney fontSize="small" />} />
-//             )}
-//           </Box>
+//                         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+//                           {job.company && (
+//                             <Chip size="small" label={job.company} icon={<BusinessCenter fontSize="small" />} />
+//                           )}
+//                           {job.location && (
+//                             <Chip size="small" label={job.location} icon={<LocationOn fontSize="small" />} />
+//                           )}
+//                           {job.salary && (
+//                             <Chip size="small" label={`$${job.salary}`} icon={<AttachMoney fontSize="small" />} />
+//                           )}
+//                         </Box>
 
-//           <Typography variant="body2" color="text.secondary" paragraph>
-//             {job.description && job.description.length > 150
-//               ? `${job.description.substring(0, 150)}...`
-//               : job.description}
-//           </Typography>
-//         </CardContent>
+//                         <Typography variant="body2" color="text.secondary" paragraph>
+//                           {job.description && job.description.length > 150
+//                             ? `${job.description.substring(0, 150)}...`
+//                             : job.description}
+//                         </Typography>
+//                       </CardContent>
 
-//         <CardActions sx={{ p: 2, pt: 0, justifyContent: "space-between" }}>
-//           <Button
-//             variant="contained"
-//             color="primary"
-//             onClick={() => handleApply(job.id, job.recruiterId)}
-//             disabled={hasApplied(job.id)}
-//             sx={{
-//               borderRadius: 2,
-//               boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
-//             }}
-//           >
-//             {hasApplied(job.id) ? "Applied" : "Apply Now"}
-//           </Button>
+//                       <CardActions sx={{ p: 2, pt: 0, justifyContent: "space-between" }}>
+//                         <Button
+//                           variant="contained"
+//                           color="primary"
+//                           onClick={() => handleApply(job.id, job.recruiterId)}
+//                           disabled={hasApplied(job.id)}
+//                           sx={{
+//                             borderRadius: 2,
+//                             boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+//                           }}
+//                         >
+//                           {hasApplied(job.id) ? "Applied" : "Apply Now"}
+//                         </Button>
 
-//           {/* Chat Button */}
-//           <Button
-//             variant="outlined"
-//             color="secondary"
-//             startIcon={<ChatIcon />}
-//             onClick={() =>
-//               handleChatOpen({
-//                 id: job.recruiterId,
-//                 name: job.recruiterName || "Recruiter",
-//               })
-//             }
-//             sx={{ borderRadius: 2 }}
-//           >
-//             Chat
-//           </Button>
-//         </CardActions>
-//       </Card>
-//     </Grid>
-//   ))}
-// </Grid>
+//                         <Button
+//                           variant="outlined"
+//                           color="secondary"
+//                           startIcon={<ChatIcon />}
+//                           onClick={() => handleChatOpen(job.recruiterId, job.recruiterName)}
+//                           sx={{ borderRadius: 2 }}
+//                         >
+//                           Chat
+//                         </Button>
+//                       </CardActions>
+//                     </Card>
+//                   </Grid>
+//                 ))}
+//               </Grid>
 //             )}
 //           </>
 //         )}
@@ -1699,8 +1329,6 @@
 //                 <Button
 //                   variant="contained"
 //                   color="primary"
-//                   component={Link}
-//                   to="/candidate/jobs"
 //                   onClick={() => setTabValue(0)}
 //                   sx={{ mt: 2, borderRadius: 2 }}
 //                 >
@@ -1785,6 +1413,20 @@
 //             )}
 //           </>
 //         )}
+
+//         <Dialog open={showChat} onClose={() => setShowChat(false)} fullWidth maxWidth="md">
+//           <DialogTitle>Chat with {selectedConversation?.name || "Recruiter"}</DialogTitle>
+//           <DialogContent>
+//             {selectedConversation && (
+//               <Message
+//                 currentUser={currentUser}
+//                 conversationId={selectedConversation.id}
+//                 receiverId={selectedConversation.receiverId}
+//                 receiverName={selectedConversation.name}
+//               />
+//             )}
+//           </DialogContent>
+//         </Dialog>
 
 //         <Snackbar
 //           open={snackbar.open}
@@ -1896,7 +1538,7 @@ const CandidateDashboard = () => {
         const response = await axios.get("http://localhost:5000/api/candidate/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Fetched currentUser:", response.data); // Debugging line
+        console.log("Fetched currentUser:", response.data);
         setCurrentUser(response.data);
         setLoading(false);
       } catch (error) {
@@ -1913,7 +1555,6 @@ const CandidateDashboard = () => {
     verifyAuth();
   }, [navigate]);
 
- 
   // Fetch available jobs
   useEffect(() => {
     const fetchJobs = async () => {
@@ -2006,20 +1647,53 @@ const CandidateDashboard = () => {
     setAnchorEl(null)
   }
 
-  // Open chat for a specific recruiter
-  const handleChatOpen = (conversation) => {
-    console.log("handleChatOpen called with:", conversation)
+  // Open chat for a specific recruiter and job
+  const handleChatOpen = async (recruiterId, recruiterName, jobId, jobTitle) => {
+    console.log("handleChatOpen called with:", { recruiterId, recruiterName, jobId, jobTitle });
 
-    if (!conversation || !conversation.id) {
-      console.error("Invalid conversation object:", conversation)
-      return
+    if (!recruiterId || !currentUser?.id || !jobId) {
+      console.error("Missing recruiterId, currentUser.id, or jobId:", { recruiterId, currentUserId: currentUser?.id, jobId });
+      setSnackbar({
+        open: true,
+        message: "Unable to start chat. Please try again.",
+        severity: "error",
+      });
+      return;
     }
 
-    setSelectedConversation(conversation)
-    setShowChat(true)
-   
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:5000/api/conversations",
+        {
+          user1Id: currentUser.id,
+          user2Id: recruiterId,
+          jobId: jobId,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-  }
+      const conversationId = response.data.conversationId;
+      console.log("Fetched conversationId:", conversationId);
+
+      setSelectedConversation({
+        id: conversationId,
+        name: recruiterName || "Recruiter",
+        receiverId: recruiterId,
+        jobTitle: jobTitle || "Job",
+      });
+      setShowChat(true);
+    } catch (err) {
+      console.error("Error fetching conversation ID:", err.response?.data || err.message);
+      setSnackbar({
+        open: true,
+        message: "Failed to start chat. Please try again.",
+        severity: "error",
+      });
+    }
+  };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue)
@@ -2347,17 +2021,11 @@ const CandidateDashboard = () => {
                           {hasApplied(job.id) ? "Applied" : "Apply Now"}
                         </Button>
 
-                        {/* Chat Button */}
                         <Button
                           variant="outlined"
                           color="secondary"
                           startIcon={<ChatIcon />}
-                          onClick={() =>
-                            handleChatOpen({
-                              id: job.recruiterId,
-                              name: job.recruiterName || "Recruiter",
-                            })
-                          }
+                          onClick={() => handleChatOpen(job.recruiterId, job.recruiterName, job.id, job.title)}
                           sx={{ borderRadius: 2 }}
                         >
                           Chat
@@ -2486,15 +2154,16 @@ const CandidateDashboard = () => {
           </>
         )}
 
-        {/* Chat Dialog */}
         <Dialog open={showChat} onClose={() => setShowChat(false)} fullWidth maxWidth="md">
-          <DialogTitle>Chat with {selectedConversation?.name || "Recruiter"}</DialogTitle>
+          <DialogTitle>
+            Chat with {selectedConversation?.name || "Recruiter"} about {selectedConversation?.jobTitle}
+          </DialogTitle>
           <DialogContent>
             {selectedConversation && (
               <Message
                 currentUser={currentUser}
                 conversationId={selectedConversation.id}
-                receiverId={selectedConversation.id}
+                receiverId={selectedConversation.receiverId}
                 receiverName={selectedConversation.name}
               />
             )}
