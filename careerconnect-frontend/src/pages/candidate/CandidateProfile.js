@@ -24,20 +24,32 @@ const CandidateProfile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
+        console.log("Token:", token); // Debug: Log the token
+        if (!token) {
+          navigate("/login");
+          return;
+        }
+
         const response = await axios.get("http://localhost:5000/api/candidate/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
+        console.log("Profile API Response:", response.data); // Debug: Log the response
         setProfile(response.data);
       } catch (err) {
         console.error("Error fetching profile:", err);
-        setSnackbar({ open: true, message: "Failed to fetch profile", severity: "error" });
+        console.error("Error response:", err.response?.data); // Debug: Log error details
+        setSnackbar({
+          open: true,
+          message: err.response?.data?.message || "Failed to fetch profile",
+          severity: "error",
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
@@ -77,15 +89,18 @@ const CandidateProfile = () => {
               fontWeight: "bold",
             }}
             src={profile.profile_photo ? `http://localhost:5000${profile.profile_photo}` : undefined}
+            onError={(e) => {
+              e.target.src = undefined; // Fallback to the avatar if the image fails to load
+            }}
           >
             {profile.name?.charAt(0).toUpperCase() || "C"}
           </Avatar>
           <Box>
             <Typography variant="h4" fontWeight="bold">
-              {profile.name}
+              {profile.name || "N/A"}
             </Typography>
             <Typography variant="body1" color="text.secondary">
-              {profile.email}
+              {profile.email || "N/A"}
             </Typography>
           </Box>
         </Box>
@@ -95,32 +110,34 @@ const CandidateProfile = () => {
             <Typography variant="subtitle1" fontWeight="bold">
               Phone:
             </Typography>
-            <Typography variant="body1">{profile.phone}</Typography>
+            <Typography variant="body1">{profile.phone || "Not provided"}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" fontWeight="bold">
               Gender:
             </Typography>
-            <Typography variant="body1">{profile.gender}</Typography>
+            <Typography variant="body1">{profile.gender || "Not provided"}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" fontWeight="bold">
               Degree:
             </Typography>
-            <Typography variant="body1">{profile.degree}</Typography>
+            <Typography variant="body1">{profile.degree || "Not provided"}</Typography>
           </Grid>
           <Grid item xs={12} md={6}>
             <Typography variant="subtitle1" fontWeight="bold">
               Institute:
             </Typography>
-            <Typography variant="body1">{profile.institute}</Typography>
+            <Typography variant="body1">{profile.institute || "Not provided"}</Typography>
           </Grid>
           <Grid item xs={12}>
             <Typography variant="subtitle1" fontWeight="bold">
               Permanent Address:
             </Typography>
             <Typography variant="body1">
-              {`${profile.permanent_address?.province}, ${profile.permanent_address?.district}, ${profile.permanent_address?.municipality}, ${profile.permanent_address?.city}`}
+              {profile.permanent_address
+                ? `${profile.permanent_address.province || "N/A"}, ${profile.permanent_address.district || "N/A"}, ${profile.permanent_address.municipality || "N/A"}, ${profile.permanent_address.city || "N/A"}`
+                : "Not provided"}
             </Typography>
           </Grid>
           <Grid item xs={12}>
@@ -128,7 +145,9 @@ const CandidateProfile = () => {
               Current Address:
             </Typography>
             <Typography variant="body1">
-              {`${profile.current_address?.province}, ${profile.current_address?.district}, ${profile.current_address?.municipality}, ${profile.current_address?.city}`}
+              {profile.current_address
+                ? `${profile.current_address.province || "N/A"}, ${profile.current_address.district || "N/A"}, ${profile.current_address.municipality || "N/A"}, ${profile.current_address.city || "N/A"}`
+                : "Not provided"}
             </Typography>
           </Grid>
         </Grid>

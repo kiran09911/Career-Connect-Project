@@ -15,6 +15,7 @@ import ProfileEdit from './pages/recruiter/ProfileEdit';
 import CandidateProfileEdit from './pages/candidate/CandidateProfileEdit';
 import CandidateProfile from "./pages/candidate/CandidateProfile";
 
+
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 
@@ -27,6 +28,7 @@ import './styles/Profile.css';
 import './styles/Chat.css'; 
 import './styles/Candidate.css';// Add this new CSS file
 
+
 const getUserId = () => {
   return localStorage.getItem("userId"); // Assuming user ID is stored in localStorage after login
 };
@@ -34,33 +36,6 @@ const getUserId = () => {
 const loggedInUserId = getUserId(); // Get the logged-in user ID
 
 
-// // Socket.io context setup
-// export const SocketContext = React.createContext();
-
-// const App = () => {
-//   const [socket, setSocket] = React.useState(null);
-
-//   useEffect(() => {
-//     // Initialize socket connection when user is authenticated
-//     const token = localStorage.getItem('token');
-//     if (token && !socket) {
-//       const newSocket = io('http://localhost:5000', {
-//         auth: { token },
-//         reconnectionAttempts: 5,
-//         reconnectionDelay: 1000,
-//       });
-//       setSocket(newSocket);
-
-//       return () => {
-//         newSocket.disconnect();
-//       };
-//     }
-//   }, []);
-
-  
-
-//   return (
-//     <SocketContext.Provider value={socket}>
 const App = () => {
   return(
       
@@ -71,7 +46,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
-            <Route path="/recruiter/profile-edit" element={<ProfileEdit />} />
+            
 
             {/* Protected routes */}
             <Route element={<ProtectedRoute allowedRoles={['candidate']} />}>
@@ -79,6 +54,7 @@ const App = () => {
               <Route path="/candidate/applications" element={<AppliedJobs />} />
               <Route path="/candidate/profile/edit" element={<CandidateProfileEdit />} />
               <Route path="/candidate/profile" element={<CandidateProfile />} />
+
             </Route>
 
             
@@ -86,11 +62,11 @@ const App = () => {
             <Route element={<ProtectedRoute allowedRoles={['recruiter']} />}>
               <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
               <Route path="/post-job" element={<PostJob />} />
+              <Route path="/recruiter/profile-edit" element={<ProfileEdit  />} />
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={['candidate', 'recruiter']} />}>
               <Route path="/jobsview" element={<JobsList />} />
-              <Route path="/profile-edit" element={<ProfileEdit userId={loggedInUserId} />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

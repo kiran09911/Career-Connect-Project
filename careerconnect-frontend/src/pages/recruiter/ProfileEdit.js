@@ -122,24 +122,9 @@ const ProfileEdit = () => {
 
   // Handle profile update
   const handleProfileUpdate = async () => {
-    // Check if all required fields are filled
-    if (
-      !profile.name ||
-      !profile.email ||
-      !profile.phone ||
-      !profile.gender ||
-      !profile.degree ||
-      !profile.institute ||
-      !profile.permanent_address.province ||
-      !profile.permanent_address.district ||
-      !profile.permanent_address.municipality ||
-      !profile.permanent_address.city ||
-      !profile.current_address.province ||
-      !profile.current_address.district ||
-      !profile.current_address.municipality ||
-      !profile.current_address.city
-    ) {
-      setSnackbar({ open: true, message: 'Please fill all required fields!', severity: 'error' });
+    // Check if required fields are filled (only name, email, and gender)
+    if (!profile.name || !profile.email || !profile.gender) {
+      setSnackbar({ open: true, message: 'Please fill all required fields (Name, Email, Gender)!', severity: 'error' });
       return;
     }
   

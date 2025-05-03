@@ -64,7 +64,6 @@ const ProfileEdit = () => {
       city: '',
     },
     profile_photo: '',
-    
   });
 
   const [loading, setLoading] = useState(true);
@@ -72,7 +71,6 @@ const ProfileEdit = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
- 
 
   // Gender options
   const genderOptions = [
@@ -82,15 +80,21 @@ const ProfileEdit = () => {
     { value: 'prefer_not_to_say', label: 'Prefer not to say' }
   ];
 
-  // Fetch the recruiter's current profile
+  // Fetch the candidate's current profile
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/user', {
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+
+      const response = await axios.get('http://localhost:5000/api/candidate/profile', {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       const data = response.data;
+      console.log("Profile API Response (Edit):", data); // Debug: Log the response
       setProfile({
         name: data.name || '',
         email: data.email || '',
@@ -122,50 +126,36 @@ const ProfileEdit = () => {
 
   // Handle profile update
   const handleProfileUpdate = async () => {
-    // Check if all required fields are filled
-    if (
-      !profile.name ||
-      !profile.email ||
-      !profile.phone ||
-      !profile.gender ||
-      !profile.degree ||
-      !profile.institute ||
-      !profile.permanent_address.province ||
-      !profile.permanent_address.district ||
-      !profile.permanent_address.municipality ||
-      !profile.permanent_address.city ||
-      !profile.current_address.province ||
-      !profile.current_address.district ||
-      !profile.current_address.municipality ||
-      !profile.current_address.city
-    ) {
-      setSnackbar({ open: true, message: 'Please fill all required fields!', severity: 'error' });
+    // Check if required fields are filled (only name, email, and gender)
+    if (!profile.name || !profile.email || !profile.gender) {
+      setSnackbar({ open: true, message: 'Please fill all required fields (Name, Email, Gender)!', severity: 'error' });
       return;
     }
-  
+
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
       const formData = new FormData();
       formData.append('name', profile.name);
       formData.append('email', profile.email);
-      formData.append('phone', profile.phone);
+      formData.append('phone', profile.phone || ''); // Optional: Send empty string if not provided
       formData.append('gender', profile.gender);
-      formData.append('degree', profile.degree);
-      formData.append('institute', profile.institute);
+      formData.append('degree', profile.degree || ''); // Optional
+      formData.append('institute', profile.institute || ''); // Optional
+      // Send address objects even if some fields are empty
       formData.append('permanent_address', JSON.stringify(profile.permanent_address));
       formData.append('current_address', JSON.stringify(profile.current_address));
       if (profile.profile_photo instanceof File) {
         formData.append('profile_photo', profile.profile_photo); // Add profile photo if updated
       }
-  
+
       await axios.put('http://localhost:5000/api/candidate/profile', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       setSnackbar({ open: true, message: 'Profile updated successfully!', severity: 'success' });
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -199,7 +189,7 @@ const ProfileEdit = () => {
     <>
       <AppBar position="static" color="default" elevation={0} sx={{ borderBottom: '1px solid #e0e0e0' }}>
         <Toolbar>
-          <IconButton edge="start" color="inherit" onClick={() => navigate('/recruiter-dashboard')} sx={{ mr: 2 }}>
+          <IconButton edge="start" color="inherit" onClick={() => navigate('/candidate-dashboard')} sx={{ mr: 2 }}>
             <Dashboard />
           </IconButton>
           <Typography variant="h6" color="inherit" sx={{ flexGrow: 1 }}>
@@ -207,8 +197,7 @@ const ProfileEdit = () => {
           </Typography>
         </Toolbar>
       </AppBar>
-      
-      
+
       <Container maxWidth="md" sx={{ mt: 4, mb: 8 }}>
         <Box sx={{ mb: 4 }}>
           <Breadcrumbs aria-label="breadcrumb">
@@ -222,19 +211,18 @@ const ProfileEdit = () => {
             </Typography>
           </Breadcrumbs>
         </Box>
-     
 
-        <Paper 
-          elevation={3} 
-          sx={{ 
+        <Paper
+          elevation={3}
+          sx={{
             borderRadius: 2,
             overflow: 'hidden',
             boxShadow: '0 4px 20px rgba(0,0,0,0.08)'
           }}
         >
-          <Box 
-            sx={{ 
-              p: 3, 
+          <Box
+            sx={{
+              p: 3,
               background: 'linear-gradient(to right, #1976d2, #2196f3)',
               color: 'white',
               display: 'flex',
@@ -243,9 +231,9 @@ const ProfileEdit = () => {
             }}
           >
             <Box sx={{ position: 'relative' }}>
-              <Avatar 
-                sx={{ 
-                  width: 80, 
+              <Avatar
+                sx={{
+                  width: 80,
                   height: 80,
                   bgcolor: 'white',
                   color: 'primary.main',
@@ -259,10 +247,11 @@ const ProfileEdit = () => {
                     ? `http://localhost:5000${profile.profile_photo}`
                     : undefined
                 }
+                onError={(e) => {
+                  e.target.src = undefined; // Fallback to the avatar if the image fails to load
+                }}
               >
                 {!profile.profile_photo && (profile.name ? profile.name.charAt(0).toUpperCase() : 'U')}
-              
-                
               </Avatar>
               <IconButton
                 component="label"
@@ -299,12 +288,12 @@ const ProfileEdit = () => {
           </Box>
 
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-            <Tabs 
-              value={tabValue} 
-              onChange={handleTabChange} 
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
               variant="fullWidth"
-              sx={{ 
-                '& .MuiTab-root': { 
+              sx={{
+                '& .MuiTab-root': {
                   py: 2,
                   fontWeight: 'medium'
                 }
@@ -325,18 +314,19 @@ const ProfileEdit = () => {
                         <Person sx={{ mr: 1 }} /> Personal Information
                       </Typography>
                       <Divider sx={{ mb: 3 }} />
-                      
+
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                           <TextField
                             label="Full Name"
                             fullWidth
                             variant="outlined"
-                            value={profile.name}
+                            value={profile.name || ''}
                             onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                             InputProps={{
                               sx: { borderRadius: 1.5 }
                             }}
+                            required
                           />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -345,12 +335,13 @@ const ProfileEdit = () => {
                             fullWidth
                             variant="outlined"
                             type="email"
-                            value={profile.email}
+                            value={profile.email || ''}
                             onChange={(e) => setProfile({ ...profile, email: e.target.value })}
                             InputProps={{
                               startAdornment: <Email color="action" sx={{ mr: 1 }} />,
                               sx: { borderRadius: 1.5 }
                             }}
+                            required
                           />
                         </Grid>
                         <Grid item xs={12} md={6}>
@@ -358,7 +349,7 @@ const ProfileEdit = () => {
                             label="Phone Number"
                             fullWidth
                             variant="outlined"
-                            value={profile.phone}
+                            value={profile.phone || ''}
                             onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
                             InputProps={{
                               startAdornment: <Phone color="action" sx={{ mr: 1 }} />,
@@ -375,6 +366,7 @@ const ProfileEdit = () => {
                               value={profile.gender || ''}
                               onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
                               sx={{ borderRadius: 1.5 }}
+                              required
                             >
                               {genderOptions.map(option => (
                                 <MenuItem key={option.value} value={option.value}>
@@ -394,14 +386,14 @@ const ProfileEdit = () => {
                         <School sx={{ mr: 1 }} /> Education
                       </Typography>
                       <Divider sx={{ mb: 3 }} />
-                      
+
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                           <TextField
                             label="Degree"
                             fullWidth
                             variant="outlined"
-                            value={profile.degree}
+                            value={profile.degree || ''}
                             onChange={(e) => setProfile({ ...profile, degree: e.target.value })}
                             placeholder="e.g., Bachelor of Computer Science"
                             InputProps={{
@@ -414,7 +406,7 @@ const ProfileEdit = () => {
                             label="Institute"
                             fullWidth
                             variant="outlined"
-                            value={profile.institute}
+                            value={profile.institute || ''}
                             onChange={(e) => setProfile({ ...profile, institute: e.target.value })}
                             placeholder="e.g., University of Technology"
                             InputProps={{
@@ -440,7 +432,7 @@ const ProfileEdit = () => {
                         <Home sx={{ mr: 1 }} /> Permanent Address
                       </Typography>
                       <Divider sx={{ mb: 3 }} />
-                      
+
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                           <TextField
@@ -520,7 +512,7 @@ const ProfileEdit = () => {
                         <LocationOn sx={{ mr: 1 }} /> Current Address
                       </Typography>
                       <Divider sx={{ mb: 3 }} />
-                      
+
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                           <TextField
@@ -614,7 +606,7 @@ const ProfileEdit = () => {
               onClick={handleProfileUpdate}
               startIcon={saving ? <CircularProgress size={20} color="inherit" /> : <Save />}
               disabled={saving}
-              sx={{ 
+              sx={{
                 borderRadius: 2,
                 px: 3,
                 boxShadow: '0 4px 10px rgba(0,0,0,0.15)'
