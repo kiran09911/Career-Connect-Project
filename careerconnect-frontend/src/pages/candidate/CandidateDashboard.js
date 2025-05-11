@@ -1446,7 +1446,7 @@ const CandidateDashboard = () => {
           { text: "Applied Jobs", icon: <Description />, value: 1, badge: applications.length },
           // { text: "Profile", icon: <Person />, to: "/candidate/profile" },
           { text: "Edit Profile", icon: <Person />, to: "/candidate/profile/edit" },
-          { text: "Settings", icon: <Settings />, to: "/candidate/settings" },
+          // { text: "Settings", icon: <Settings />, to: "/candidate/settings" },
         ].map((item, index) => (
           <ListItem
             key={index}
@@ -1640,12 +1640,12 @@ const CandidateDashboard = () => {
           </ListItemIcon>
           <ListItemText>Profile</ListItemText>
         </MenuItem>
-        <MenuItem component={Link} to="/candidate/settings" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
+        {/* <MenuItem component={Link} to="/candidate/settings" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
           <ListItemText>Settings</ListItemText>
-        </MenuItem>
+        </MenuItem> */}
         <Divider />
         <MenuItem
           onClick={() => {
@@ -1986,7 +1986,7 @@ const CandidateDashboard = () => {
                         <CardActions
                           sx={{ p: 2, pt: 0, justifyContent: "space-between", borderTop: "1px solid #f0f0f0" }}
                         >
-                          <Button
+                          {/* <Button
                             variant="outlined"
                             size="small"
                             component={Link}
@@ -2007,7 +2007,8 @@ const CandidateDashboard = () => {
                           >
                             Details
                             <ChevronRight sx={{ fontSize: "1rem", ml: 0.5 }} />
-                          </Button>
+                          </Button> */}
+            
 
                           <Button
                             variant="contained"
