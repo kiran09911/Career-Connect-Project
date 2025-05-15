@@ -3418,7 +3418,7 @@ const RecruiterDashboard = () => {
                 </Paper>
               ) : (
                 <Grid container spacing={3}>
-                  {filteredJobs.map((job) => (
+                  {/* {filteredJobs.map((job) => (
                     <Grid item xs={12} md={6} key={job.id}>
                       <Card
                         sx={{
@@ -3592,7 +3592,177 @@ const RecruiterDashboard = () => {
                         </CardActions>
                       </Card>
                     </Grid>
-                  ))}
+                  ))} */}
+                  {filteredJobs.map((job) => (
+    <Grid item xs={12} md={6} key={job.id}>
+      <Card
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          borderRadius: 3,
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+          transition: "transform 0.2s, box-shadow 0.2s",
+          overflow: "visible",
+          position: "relative",
+          "&:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.1)",
+          },
+        }}
+      >
+        {job.photo && (
+          <Box sx={{ height: 180, overflow: "hidden", position: "relative", backgroundColor: "#f5f5f5" }}>
+            <img
+              src={`http://localhost:5000${job.photo}`}
+              alt={job.title}
+              style={{
+                width: "100%",
+                maxHeight: "100%",
+                objectFit: "contain",
+                borderRadius: "3px 3px 0 0",
+                transition: "transform 0.3s ease",
+              }}
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/180"; // Fallback image
+                console.error("Image failed to load for job:", job.title, job.photo);
+              }}
+            />
+          </Box>
+        )}
+        <Box sx={{ height: 4, bgcolor: "#1976d2", borderRadius: job.photo ? "0" : "3px 3px 0 0" }} />
+        <CardContent sx={{ flexGrow: 1, pt: 2.5, pb: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 1 }}>
+            <Typography
+              variant="h6"
+              component="h2"
+              gutterBottom
+              sx={{
+                fontWeight: 600,
+                color: "#1565c0",
+                fontSize: "1.1rem",
+                lineHeight: 1.3,
+                mb: 0.5,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                height: 46,
+              }}
+            >
+              {job.title}
+            </Typography>
+            <Chip
+              label={`${applications.filter((app) => app.job_id === job.id).length} Applications`}
+              color="primary"
+              size="small"
+              sx={{ fontWeight: 500, ml: 1 }}
+            />
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 1.5 }}>
+            <BusinessCenter fontSize="small" sx={{ color: "#1976d2", mr: 1, fontSize: "1rem" }} />
+            <Typography variant="body2" sx={{ fontWeight: 500, color: "#424242" }}>
+              {job.company || "Unknown Company"}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+            {job.location && (
+              <Chip
+                size="small"
+                icon={<LocationOn fontSize="small" />}
+                label={job.location}
+                sx={{
+                  bgcolor: "#e3f2fd",
+                  color: "#1565c0",
+                  fontWeight: 500,
+                  fontSize: "0.8rem",
+                  borderRadius: 1,
+                  "& .MuiChip-icon": { color: "#1976d2" },
+                }}
+              />
+            )}
+            {job.job_type && (
+              <Chip
+                size="small"
+                icon={<AccessTime fontSize="small" />}
+                label={job.job_type}
+                sx={{
+                  bgcolor: "#e3f2fd",
+                  color: "#1565c0",
+                  fontWeight: 500,
+                  fontSize: "0.8rem",
+                  borderRadius: 1,
+                  "& .MuiChip-icon": { color: "#1976d2" },
+                }}
+              />
+            )}
+            {job.salary && (
+              <Chip
+                size="small"
+                icon={<AttachMoney fontSize="small" />}
+                label={job.salary}
+                sx={{
+                  bgcolor: "#e3f2fd",
+                  color: "#1565c0",
+                  fontWeight: 500,
+                  fontSize: "0.8rem",
+                  borderRadius: 1,
+                  "& .MuiChip-icon": { color: "#1976d2" },
+                }}
+              />
+            )}
+          </Box>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              lineHeight: 1.6,
+              display: "-webkit-box",
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: "vertical",
+              overflow: "hidden",
+              height: 60,
+              mb: 1,
+            }}
+          >
+            {job.description.length > 200 ? `${job.description.substring(0, 200)}...` : job.description}
+          </Typography>
+        </CardContent>
+        <Divider sx={{ my: 1 }} />
+        <CardActions sx={{ p: 2, pt: 0, justifyContent: "flex-end" }}>
+          <Button
+            size="small"
+            startIcon={<Edit />}
+            onClick={() => handleEditClick(job)}
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              fontWeight: 500,
+              color: "#1976d2",
+              "&:hover": { bgcolor: "rgba(25, 118, 210, 0.04)" },
+            }}
+          >
+            Edit
+          </Button>
+          <Button
+            size="small"
+            color="error"
+            startIcon={<Delete />}
+            onClick={() => handleDeleteClick(job)}
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              fontWeight: 500,
+              color: "#d32f2f",
+              "&:hover": { bgcolor: "rgba(211, 47, 47, 0.04)" },
+            }}
+          >
+            Delete
+          </Button>
+        </CardActions>
+      </Card>
+    </Grid>
+  ))}
                 </Grid>
               )}
             </>
