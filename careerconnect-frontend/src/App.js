@@ -14,6 +14,8 @@ import AppliedJobs from "./pages/candidate/AppliedJobs";
 import ProfileEdit from './pages/recruiter/ProfileEdit';
 import CandidateProfileEdit from './pages/candidate/CandidateProfileEdit';
 import CandidateProfile from "./pages/candidate/CandidateProfile";
+import ContactUs from "./components/ContactUs";
+
 
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
@@ -62,6 +64,8 @@ const App = () => {
               <Route path="/candidate/applications" element={<AppliedJobs />} />
               <Route path="/candidate/profile/edit" element={<CandidateProfileEdit />} />
               <Route path="/candidate/profile" element={<CandidateProfile />} />
+              <Route path="/candidate/contact" element={<ContactUs />} />
+              <Route path="/candidate/resetpassword" element={<ResetPassword />} />
 
             </Route>
             
@@ -72,6 +76,9 @@ const App = () => {
               <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
               <Route path="/post-job" element={<PostJob />} />
               <Route path="/recruiter/profile-edit" element={<ProfileEdit  />} />
+              <Route path="/recruiter/contact" element={<ContactUs />} />
+              <Route path="/recruiter/resetpassword" element={<ResetPassword />} />
+
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={['candidate', 'recruiter']} />}>

@@ -2480,7 +2480,10 @@ import {
   Notifications,
   FilterList,
   KeyboardArrowDown,
+  Info as InfoIcon,
+  ContactMail as ContactMailIcon,
 } from "@mui/icons-material"
+
 
 const CandidateDashboard = () => {
   const navigate = useNavigate()
@@ -2809,6 +2812,8 @@ const CandidateDashboard = () => {
           { text: "Browse Jobs", icon: <Work />, value: 0 },
           { text: "Applied Jobs", icon: <Description />, value: 1, badge: applications.length },
           { text: "Edit Profile", icon: <Person />, to: "/candidate/profile/edit" },
+          { text: "Contact Us", icon: <ContactMailIcon />, to: "/candidate/contact" },
+          { text: "Reset Password", icon: <Settings />, to: "/candidate/resetpassword" },
         ].map((item, index) => (
           <ListItem
             key={index}

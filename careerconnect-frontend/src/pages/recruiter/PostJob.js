@@ -827,7 +827,7 @@ import React, { useState } from 'react';
        if (!formData.company.trim()) newErrors.company = 'Company name is required';
        if (!formData.location.trim()) newErrors.location = 'Location is required';
        if (!formData.description.trim()) newErrors.description = 'Description is required';
-       if (formData.description.length < 20) newErrors.description = 'Description should be at least 50 characters';
+       if (formData.description.length < 20) newErrors.description = 'Description should be at least 30 characters';
        if (formData.salary && !/^\d+(\.\d{1,2})?$/.test(formData.salary)) {
          newErrors.salary = 'Enter valid salary (numbers only)';
        }
@@ -993,7 +993,7 @@ import React, { useState } from 'react';
                        ),
                        sx: { borderRadius: 1.5 }
                      }}
-                     placeholder="e.g. New York, NY or Remote"
+                     placeholder="e.g. kathmandu, Nepal "
                    />
                  </Grid>
               
@@ -1052,7 +1052,7 @@ import React, { useState } from 'react';
                        ),
                        sx: { borderRadius: 1.5 }
                      }}
-                     placeholder="e.g. 50000 or 25.50/hour"
+                     placeholder="e.g.  rs 50000 "
                    />
                  </Grid>
               
@@ -1194,7 +1194,7 @@ import React, { useState } from 'react';
                 
                    {formData.salary && (
                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                       <AttachMoney fontSize="small" color="action" sx={{ mr: 1 }} />
+                    
                        <Typography variant="body1">
                          {formData.salary}
                        </Typography>

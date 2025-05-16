@@ -430,30 +430,7 @@ exports.deleteJob = async (req, res) => {
   }
 };
 
-// Get messages for a conversation
-exports.getConversationMessages = async (req, res) => {
-  const { conversationId } = req.params;
 
-  try {
-    const connection = await pool.getConnection();
-    try {
-      const [messages] = await connection.query(
-        "SELECT m.*, u1.name AS sender_name, u2.name AS receiver_name " +
-        "FROM messages m " +
-        "JOIN users u1 ON m.sender_id = u1.id " +
-        "JOIN users u2 ON m.receiver_id = u2.id " +
-        "WHERE m.conversation_id = ? ORDER BY m.created_at ASC",
-        [conversationId]
-      );
-      res.json(messages);
-    } finally {
-      connection.release();
-    }
-  } catch (err) {
-    console.error("Error fetching messages:", err);
-    res.status(500).json({ message: "Failed to fetch messages" });
-  }
-};
 
 // Get all applications
 exports.getApplications = async (req, res) => {
@@ -536,18 +513,33 @@ exports.getAnalytics = async (req, res) => {
   }
 };
 
-// Update platform settings (e.g., allowed file types)
-exports.updateSettings = async (req, res) => {
-  const { allowedFileTypes, maxFileSize } = req.body;
 
-  try {
-    const settings = {
-      allowedFileTypes: allowedFileTypes || [".pdf", ".doc", ".docx"],
-      maxFileSize: maxFileSize || 5 * 1024 * 1024, // 5MB default
-    };
-    res.json({ message: "Settings updated successfully", settings });
-  } catch (err) {
-    console.error("Error updating settings:", err);
-    res.status(500).json({ message: "Failed to update settings" });
-  }
+
+// Submit feedback from Contact Us form
+exports.submitFeedback = (req, res) => {
+    const { firstName, lastName, email, message } = req.body;
+
+    if (!firstName || !lastName || !email || !message) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const query = "INSERT INTO feedback (first_name, last_name, email, message) VALUES (?, ?, ?, ?)";
+    pool.query(query, [firstName, lastName, email, message], (err, result) => {
+        if (err) {
+            console.error("Error inserting feedback:", err);
+            return res.status(500).json({ error: "Failed to submit feedback" });
+        }
+        res.status(200).json({ message: "Feedback submitted successfully" });
+    });
+};
+
+exports.getFeedback = async (req, res) => {
+    const query = "SELECT * FROM feedback ORDER BY submitted_at DESC";
+    try {
+        const [results] = await pool.query(query);
+        res.status(200).json(results);
+    } catch (err) {
+        console.error("Error fetching feedback:", err);
+        res.status(500).json({ error: "Failed to fetch feedback", details: err.message });
+    }
 };

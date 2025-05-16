@@ -2555,6 +2555,7 @@ import {
   Mail,
   Settings,
   Chat as ChatIcon,
+   ContactMail as ContactMailIcon,
   Search,
   LocationOn,
   AccessTime,
@@ -2928,6 +2929,7 @@ const RecruiterDashboard = () => {
           {user.email || "recruiter@example.com"}
         </Typography>
       </Box>
+      
       <Divider />
       <List sx={{ flexGrow: 1, py: 1 }}>
         <ListItem
@@ -3007,31 +3009,24 @@ const RecruiterDashboard = () => {
             }}
           />
         </ListItem>
-        <ListItem
-          button
-          component={Link}
-          to="/recruiter/settings"
-          sx={{
-            py: 1.2,
-            px: 2,
-            borderRadius: "0 24px 24px 0",
-            mr: 1,
-            mb: 0.5,
-            "&:hover": { bgcolor: "rgba(0, 0, 0, 0.04)" },
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 40 }}>
-            <Settings />
-          </ListItemIcon>
-          <ListItemText
-            primary="Settings"
-            primaryTypographyProps={{
-              fontSize: "0.95rem",
-              fontWeight: 500,
-            }}
-          />
-        </ListItem>
+        
       </List>
+
+      <MenuItem component={Link} to="/recruiter/contact" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
+       <ListItemIcon>
+         <ContactMailIcon fontSize="small" />
+       </ListItemIcon>
+       <ListItemText>Contact Us</ListItemText>
+        </MenuItem>
+
+          <MenuItem component={Link} to="/recruiter/resetpassword" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
+       <ListItemIcon>
+         <Settings fontSize="small" />
+       </ListItemIcon>
+       <ListItemText>Reset password</ListItemText>
+        </MenuItem>
+
+
       <Divider />
       <Box sx={{ p: 2 }}>
         <Button
@@ -3168,11 +3163,11 @@ const RecruiterDashboard = () => {
           </ListItemIcon>
           <ListItemText>Profile</ListItemText>
         </MenuItem>
-        <MenuItem component={Link} to="/recruiter/settings" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
+        <MenuItem component={Link} to="/recruiter/resetpassword" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
+          <ListItemText>Reset Password</ListItemText>
         </MenuItem>
         <Divider />
         <MenuItem
