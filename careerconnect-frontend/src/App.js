@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
-// import { io } from 'socket.io-client';
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 import PostJob from './pages/recruiter/PostJob';
@@ -15,6 +14,8 @@ import ProfileEdit from './pages/recruiter/ProfileEdit';
 import CandidateProfileEdit from './pages/candidate/CandidateProfileEdit';
 import CandidateProfile from "./pages/candidate/CandidateProfile";
 import ContactUs from "./components/ContactUs";
+import TermsAndCondition from './pages/auth/TermsAndCondition';
+import Home from "./pages/shared/Home";
 
 
 
@@ -28,7 +29,7 @@ import "./styles/Home.css";
 import './styles/PostJob.css';
 import './styles/Profile.css';
 import './styles/Chat.css'; 
-import './styles/Candidate.css';// Add this new CSS file
+import './styles/Candidate.css';
 
 
 const getUserId = () => {
@@ -43,11 +44,13 @@ const App = () => {
       
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Register />} />
+            <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/terms-and-conditions" element={<TermsAndCondition />} />
+            <Route path="/Home" element={<Home/>} />
 
 
             <Route path="/admin" element={<AdminDashboard />} />
@@ -89,7 +92,7 @@ const App = () => {
           </Routes>
         </BrowserRouter>
      
-    // </SocketContext.Provider>
+  
   );
 };
 

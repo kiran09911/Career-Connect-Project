@@ -542,6 +542,22 @@ const Register = () => {
             {loading ? <CircularProgress size={24} /> : "Create Account"}
           </Button>
         </form>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="body2">
+            Accepet Terms And Conditions{" "}
+            <Link 
+              to="/terms-and-conditions"
+              style={{ 
+                textDecoration: "none", 
+                color: theme.palette.primary.main,
+                fontWeight: 'bold'
+              }}
+            >
+              read here
+            </Link>
+          </Typography>
+        </Box>
+        
 
         <Divider sx={{ my: 3 }}>
           <Typography variant="body2" color="text.secondary">
