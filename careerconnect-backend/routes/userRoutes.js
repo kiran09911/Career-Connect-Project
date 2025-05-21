@@ -8,4 +8,5 @@ const router = express.Router();
 // Route to fetch user profile
 router.get('/', authenticateToken, getUserById);
 
+
 module.exports = router;

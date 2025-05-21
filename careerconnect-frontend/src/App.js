@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes, useNavigate } from "react-router-dom";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 import PostJob from './pages/recruiter/PostJob';
-import JobsList from './pages/candidate/JobsList';
+// import JobsList from './pages/candidate/JobsList';
 import CandidateDashboard from "./pages/candidate/CandidateDashboard";
 import RecruiterDashboard from "./pages/recruiter/RecruiterDashboard";
 import AdminDashboard from "./components/AdminDashboard";
@@ -13,6 +13,7 @@ import AppliedJobs from "./pages/candidate/AppliedJobs";
 import ProfileEdit from './pages/recruiter/ProfileEdit';
 import CandidateProfileEdit from './pages/candidate/CandidateProfileEdit';
 import CandidateProfile from "./pages/candidate/CandidateProfile";
+import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
 import ContactUs from "./components/ContactUs";
 import TermsAndCondition from './pages/auth/TermsAndCondition';
 import Home from "./pages/shared/Home";
@@ -79,13 +80,14 @@ const App = () => {
               <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
               <Route path="/post-job" element={<PostJob />} />
               <Route path="/recruiter/profile-edit" element={<ProfileEdit  />} />
+              <Route path="/recruiter/profile" element={<RecruiterProfile />} />
               <Route path="/recruiter/contact" element={<ContactUs />} />
               <Route path="/recruiter/resetpassword" element={<ResetPassword />} />
 
             </Route>
 
             <Route element={<ProtectedRoute allowedRoles={['candidate', 'recruiter']} />}>
-              <Route path="/jobsview" element={<JobsList />} />
+              {/* <Route path="/jobsview" element={<JobsList />} /> */}
             </Route>
 
             <Route path="*" element={<NotFound />} />

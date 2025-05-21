@@ -2568,6 +2568,8 @@ import PostJob from "./PostJob"
 import EditJob from "./EditJob"
 import Message from "../../components/chat/Message"
 
+
+
 const RecruiterDashboard = () => {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
@@ -3002,7 +3004,7 @@ const RecruiterDashboard = () => {
             <Person />
           </ListItemIcon>
           <ListItemText
-            primary="Profile"
+            primary=" Edit Profile"
             primaryTypographyProps={{
               fontSize: "0.95rem",
               fontWeight: 500,
@@ -3157,18 +3159,13 @@ const RecruiterDashboard = () => {
           </Typography>
         </Box>
 
-        <MenuItem component={Link} to="/recruiter/profile-edit" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
+        <MenuItem component={Link} to="/recruiter/profile" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
           <ListItemIcon>
             <Person fontSize="small" />
           </ListItemIcon>
           <ListItemText>Profile</ListItemText>
         </MenuItem>
-        <MenuItem component={Link} to="/recruiter/resetpassword" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Reset Password</ListItemText>
-        </MenuItem>
+       
         <Divider />
         <MenuItem
           onClick={() => {
@@ -3182,6 +3179,7 @@ const RecruiterDashboard = () => {
           </ListItemIcon>
           <ListItemText>Logout</ListItemText>
         </MenuItem>
+        
       </Menu>
 
       <Drawer
