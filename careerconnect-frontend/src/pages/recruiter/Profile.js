@@ -44,7 +44,18 @@ const RecruiterProfile = () => {
         const response = await axios.get('http://localhost:5000/api/recruiter/profile', {
           headers: { Authorization: `Bearer ${token}` },
         })
-        setProfile(response.data)
+        console.log('Raw profile API response:', response.data)
+        const validatedProfile = { ...response.data }
+        if (validatedProfile.profile_photo) {
+          const isValidPath = validatedProfile.profile_photo.startsWith('/uploads') && !validatedProfile.profile_photo.includes('/static/media')
+          if (!isValidPath) {
+            console.warn('Invalid profile_photo detected, setting to null:', validatedProfile.profile_photo)
+            validatedProfile.profile_photo = null
+          } else {
+            console.log('Validated profile_photo:', validatedProfile.profile_photo)
+          }
+        }
+        setProfile(validatedProfile)
       } catch (err) {
         console.error("Error fetching profile:", err)
         setSnackbar({
@@ -115,6 +126,9 @@ const RecruiterProfile = () => {
       .join("")
       .slice(0, 2)
   }
+
+  const avatarSrc = profile.profile_photo ? `http://localhost:5000${profile.profile_photo}` : undefined
+  console.log('Final Avatar src before rendering:', avatarSrc)
 
   return (
     <Box
@@ -188,7 +202,7 @@ const RecruiterProfile = () => {
                     mb: 3,
                   }}
                 >
-                  {/* <Avatar
+                  <Avatar
                     sx={{
                       width: { xs: 120, sm: 140, md: 160 },
                       height: { xs: 120, sm: 140, md: 160 },
@@ -202,13 +216,14 @@ const RecruiterProfile = () => {
                         transform: "scale(1.05)",
                       },
                     }}
-                    src={profile.profile_photo ? `http://localhost:5000${profile.profile_photo}` : undefined}
+                    src={avatarSrc}
                     onError={(e) => {
                       e.target.src = undefined
+                      console.log('Avatar image load failed, falling back to initials')
                     }}
                   >
                     {getInitials(profile.name)}
-                  </Avatar> */}
+                  </Avatar>
 
                   <Box
                     sx={{
@@ -218,25 +233,23 @@ const RecruiterProfile = () => {
                       flex: 1,
                     }}
                   >
-                    <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold" sx={{ mb: 0.5 , color: "#FFFFFF" }}>
+                    <Typography variant={isMobile ? "h5" : "h4"} fontWeight="bold" sx={{ mb: 0.5, color: "#FFFFFF" }}>
                       {profile.name || "N/A"}
                     </Typography>
                     <Box sx={{ mt: 8 }}>
-
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: isMobile ? "center" : "flex-start",
-                        mb: 1,
-                      }}
-                    >
-                      <Email fontSize="small" color="action" sx={{ mr: 1 }} />
-                      <Typography variant="body1" color="text.secondary">
-                        {profile.email || "N/A"}
-                      </Typography>
-                    </Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: isMobile ? "center" : "flex-start",
+                          mb: 1,
+                        }}
+                      >
+                        <Email fontSize="small" color="action" sx={{ mr: 1 }} />
+                        <Typography variant="body1" color="text.secondary">
+                          {profile.email || "N/A"}
+                        </Typography>
+                      </Box>
                     </Box>
                     {profile.degree && (
                       <Chip

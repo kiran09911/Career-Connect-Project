@@ -3011,7 +3011,7 @@ const RecruiterDashboard = () => {
             }}
           />
         </ListItem>
-        
+         
       </List>
 
       <MenuItem component={Link} to="/recruiter/contact" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
@@ -3030,6 +3030,8 @@ const RecruiterDashboard = () => {
 
 
       <Divider />
+      
+             
       <Box sx={{ p: 2 }}>
         <Button
           fullWidth
@@ -3158,14 +3160,14 @@ const RecruiterDashboard = () => {
             {user.email || "user@example.com"}
           </Typography>
         </Box>
+         <MenuItem component={Link} to="/recruiteredit/profile" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
+                <ListItemIcon>
+                  <Person fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>Profile</ListItemText>
+              </MenuItem>
 
-        <MenuItem component={Link} to="/recruiter/profile" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
-          <ListItemIcon>
-            <Person fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Profile</ListItemText>
-        </MenuItem>
-       
+        
         <Divider />
         <MenuItem
           onClick={() => {

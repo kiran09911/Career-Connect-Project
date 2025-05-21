@@ -13,7 +13,7 @@ import AppliedJobs from "./pages/candidate/AppliedJobs";
 import ProfileEdit from './pages/recruiter/ProfileEdit';
 import CandidateProfileEdit from './pages/candidate/CandidateProfileEdit';
 import CandidateProfile from "./pages/candidate/CandidateProfile";
-import RecruiterProfile from "./pages/recruiter/RecruiterProfile";
+import Profile from './pages/recruiter/Profile';
 import ContactUs from "./components/ContactUs";
 import TermsAndCondition from './pages/auth/TermsAndCondition';
 import Home from "./pages/shared/Home";
@@ -80,7 +80,7 @@ const App = () => {
               <Route path="/recruiter-dashboard" element={<RecruiterDashboard />} />
               <Route path="/post-job" element={<PostJob />} />
               <Route path="/recruiter/profile-edit" element={<ProfileEdit  />} />
-              <Route path="/recruiter/profile" element={<RecruiterProfile />} />
+              <Route path="/recruiteredit/profile" element={<Profile />} />
               <Route path="/recruiter/contact" element={<ContactUs />} />
               <Route path="/recruiter/resetpassword" element={<ResetPassword />} />
 
