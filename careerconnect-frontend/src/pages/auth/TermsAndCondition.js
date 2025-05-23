@@ -545,13 +545,13 @@ const TermsAndConditions = () => {
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
                   CareerConnect Inc.
                 </Typography>
-                <Typography variant="body1">123 Business Avenue</Typography>
-                <Typography variant="body1">San Francisco, CA 94105</Typography>
-                <Typography variant="body1">United States</Typography>
+                <Typography variant="body1"> Business Avenue</Typography>
+                <Typography variant="body1">kathmandu</Typography>
+                <Typography variant="body1">Nepal</Typography>
                 <Typography variant="body1" sx={{ mt: 1 }}>
-                  Email: contact@careerconnect.com
+                  Email: careerconnect1@gmail.com
                 </Typography>
-                <Typography variant="body1">Phone: +1 (555) 123-4567</Typography>
+                <Typography variant="body1">Phone: +977 9741720726</Typography>
               </Box>
             </Box>
 

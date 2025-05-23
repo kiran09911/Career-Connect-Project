@@ -76,13 +76,7 @@ exports.login = async (req, res) => {
         return res.status(401).json({ message: "Invalid admin password" });
       }
 
-      // For hashed passwords (uncomment if using hashed passwords in .env)
-      /*
-      const isMatch = await bcrypt.compare(password, admin.password);
-      if (!isMatch) {
-        return res.status(401).json({ message: "Invalid admin password" });
-      }
-      */
+     
 
       const token = jwt.sign({ email: admin.email, role: "admin", is_admin: true }, JWT_SECRET, { expiresIn: "30d" });
 
