@@ -205,3 +205,51 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch messages.", error: err.message });
   }
 };
+
+
+
+exports.getMessageCount = async (req, res) => {
+  const { user1Id, user2Id, jobId } = req.params;
+
+  if (!user1Id || !user2Id || !jobId) {
+    return res.status(400).json({ message: "Missing required parameters" });
+  }
+
+  try {
+    const connection = await pool.getConnection();
+    try {
+      // Find conversation between users for this job
+      const [conversations] = await connection.query(
+        `SELECT id FROM conversations 
+         WHERE ((user1_id = ? AND user2_id = ?) 
+                OR (user1_id = ? AND user2_id = ?))
+           AND job_id = ?`,
+        [user1Id, user2Id, user2Id, user1Id, jobId]
+      );
+
+      if (conversations.length === 0) {
+        return res.json({ count: 0 });
+      }
+
+      // Get message count for the found conversation
+      const [countResult] = await connection.query(
+        `SELECT COUNT(*) AS messageCount 
+         FROM messages 
+         WHERE conversation_id = ?`,
+        [conversations[0].id]
+      );
+
+      res.json({ count: countResult[0].messageCount });
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error("Error getting message count:", {
+      error: err.message,
+      stack: err.stack,
+      params: req.params
+    });
+    res.status(500).json({ message: "Failed to get message count", error: err.message });
+  }
+};
+

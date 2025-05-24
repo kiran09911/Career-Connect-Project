@@ -15,6 +15,7 @@ import CandidateProfileEdit from './pages/candidate/CandidateProfileEdit';
 import CandidateProfile from "./pages/candidate/CandidateProfile";
 import Profile from './pages/recruiter/Profile';
 import ContactUs from "./components/ContactUs";
+import OCRUpload from "./components/OCRUpload";
 import TermsAndCondition from './pages/auth/TermsAndCondition';
 import Home from "./pages/shared/Home";
 
@@ -70,6 +71,8 @@ const App = () => {
               <Route path="/candidate/profile" element={<CandidateProfile />} />
               <Route path="/candidate/contact" element={<ContactUs />} />
               <Route path="/candidate/resetpassword" element={<ResetPassword />} />
+              <Route path="/candidate/ocr" element={<OCRUpload />} />
+
 
             </Route>
             
@@ -83,6 +86,7 @@ const App = () => {
               <Route path="/recruiteredit/profile" element={<Profile />} />
               <Route path="/recruiter/contact" element={<ContactUs />} />
               <Route path="/recruiter/resetpassword" element={<ResetPassword />} />
+              <Route path="/recruiter/ocrupload" element={<OCRUpload />} />
 
             </Route>
 

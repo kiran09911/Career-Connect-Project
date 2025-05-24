@@ -228,6 +228,12 @@ const RecruiterDashboard = () => {
           job.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           job.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           job.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          job.created_at?.toLowerCase?.().includes(searchTerm.toLowerCase()) ||
+           new Date(job.created_at)
+          .toLocaleDateString('en-CA')
+           .toLowerCase()
+          .includes(searchTerm.toLowerCase())||
+
           job.description?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredJobs(filtered)
@@ -526,6 +532,13 @@ const RecruiterDashboard = () => {
        </ListItemIcon>
        <ListItemText>Contact Us</ListItemText>
         </MenuItem>
+      
+      <MenuItem component={Link} to="/recruiter/ocrupload" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
+       <ListItemIcon>
+         <Description fontSize="small" />
+       </ListItemIcon>
+       <ListItemText>OCR Upload</ListItemText>
+        </MenuItem>
 
           <MenuItem component={Link} to="/recruiter/resetpassword" onClick={handleProfileMenuClose} sx={{ py: 1.5 }}>
        <ListItemIcon>
@@ -601,13 +614,7 @@ const RecruiterDashboard = () => {
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Tooltip title="Notifications">
-              <IconButton color="inherit" sx={{ mr: 1 }}>
-                <Badge badgeContent={applications.length} color="error">
-                  <Notifications />
-                </Badge>
-              </IconButton>
-            </Tooltip>
+           
 
             <Button
               color="inherit"
@@ -1783,3 +1790,4 @@ const RecruiterDashboard = () => {
 }
 
 export default RecruiterDashboard
+

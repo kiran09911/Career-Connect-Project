@@ -10,6 +10,8 @@ const applicationRoutes = require('./routes/applicationRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const userRoutes = require('./routes/userRoutes');
+const ocrRoutes = require('./routes/ocrRoutes');
+const notificationRoutes = require('./routes/notificationsRoutes');
 const { initializeSocket } = require("./utils/socket");
 
 const app = express();
@@ -33,9 +35,14 @@ app.use('/api', applicationRoutes);
 app.use('/api', profileRoutes);
 app.use('/api', messageRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api', ocrRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
