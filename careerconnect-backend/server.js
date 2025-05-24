@@ -11,7 +11,6 @@ const profileRoutes = require('./routes/profileRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const userRoutes = require('./routes/userRoutes');
 const ocrRoutes = require('./routes/ocrRoutes');
-const notificationRoutes = require('./routes/notificationsRoutes');
 const { initializeSocket } = require("./utils/socket");
 
 const app = express();
@@ -37,7 +36,7 @@ app.use('/api', messageRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api', ocrRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/notifications', notificationRoutes);
+
 
 
 
